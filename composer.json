@@ -1,0 +1,39 @@
+{
+  "name": "maliboot/lombok",
+  "description": "A plugin library for Maliboot.",
+  "license": "MIT",
+  "keywords": [
+    "php",
+    "swoole",
+    "hyperf",
+    "lombok",
+    "maliboot"
+  ],
+  "support": {
+  },
+  "require": {
+    "php": ">=8.0",
+    "hyperf/di": "^3.0",
+    "hyperf/logger": "~3.0.0",
+    "hyperf/collection": "~3.0.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Maliboot\\Lombok\\": "src/"
+    },
+    "files": [
+    ]
+  },
+  "autoload-dev": {
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "config": {
+    "sort-packages": true
+  },
+  "extra": {
+    "hyperf": {
+      "config": "Maliboot\\Lombok\\ConfigProvider"
+    }
+  }
+}
