@@ -10,6 +10,6 @@ use Maliboot\Lombok\contract\GetterAnnotationInterface;
 use Maliboot\Lombok\contract\SetterAnnotationInterface;
 
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_PROPERTY)]
-class SetterGetter extends AbstractAnnotation implements GetterAnnotationInterface, SetterAnnotationInterface
+class GetterSetter extends AbstractAnnotation implements GetterAnnotationInterface, SetterAnnotationInterface
 {
 }

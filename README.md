@@ -1,7 +1,8 @@
 ## Lombok
 
 ### 简介
-这是一个通过`注解`来减少`重复代码`的工具
+这是一个通过`注解`来减少`重复代码`的工具。
+本插件参考了[Java库-Lombok](https://projectlombok.org/)奇思妙想编写而成，与其一样，致力于解放开发者的开发☕️。最后，本插件的名称也以`lombok`向其致敬。
 
 ### 依赖
 * `hyperf/di`
@@ -61,7 +62,7 @@ var_dump((new Foo)->getId()); // output: 1
 |:-------------------------------------------|:------------------------------------------------------------------------|
 | `\Maliboot\Lombok\Annotation\Getter`       | 生成类属性`Getter`方法                                                         |
 | `\Maliboot\Lombok\Annotation\Setter`       | 生成类属性`Setter`方法                                                         |
-| `\Maliboot\Lombok\Annotation\SetterGetter` | 集成`Setter`与`Getter`功能                                                   |
+| `\Maliboot\Lombok\Annotation\GetterSetter` | 集成`Setter`与`Getter`功能                                                   |
 | `\Maliboot\Lombok\Annotation\Logger`       | 生成类属性`public \Psr\Log\LoggerInterface $logger`                          |
 | `\Maliboot\Lombok\Annotation\ToArray`      | 生成类方法`public static function toArray(object $class): array`             |
 | `\Maliboot\Lombok\Annotation\ToCollection` | 生成类方法`public static function toCollection(object $class): Collection`方法 |
@@ -106,7 +107,7 @@ var_dump((new Foo)->getId()); // output: 1
 ```
 
 ###### 3、自定义组合注解功能
-当然，同时我们需要自定义一个具有`Setter`,`Getter`, `Logger`等多功能的注解，并且可以自定义组合这些功能时，同理，只需要在某注解上继续继承相应的注解接口皆可。可用的接口如下
+当然，同时我们需要自定义一个（或者老项目里已有的一个类注解扩展支持）拥有`Setter`,`Getter`, `Logger`等多功能的注解，并且可以自定义组合这些功能时。那么同理，只需要在某注解上继续继承相应的注解接口皆可。可用的接口如下
 
 | 注解接口                                                        | 功能                                                                      |
 |:------------------------------------------------------------|:------------------------------------------------------------------------|

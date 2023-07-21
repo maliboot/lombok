@@ -9,7 +9,7 @@ use Maliboot\Lombok\Annotation\Getter;
 use Maliboot\Lombok\Annotation\Logger;
 use Maliboot\Lombok\Annotation\Lombok;
 use Maliboot\Lombok\Annotation\Setter;
-use Maliboot\Lombok\Annotation\SetterGetter;
+use Maliboot\Lombok\Annotation\GetterSetter;
 use Maliboot\Lombok\Annotation\ToArray;
 use Maliboot\Lombok\Annotation\ToCollection;
 
@@ -19,7 +19,7 @@ class InjectAspect extends AbstractAspect
     public array $annotations = [
         Setter::class,
         Getter::class,
-        SetterGetter::class,
+        GetterSetter::class,
         Logger::class,
         ToArray::class,
         ToCollection::class,
