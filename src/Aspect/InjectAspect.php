@@ -1,17 +1,17 @@
 <?php
 
-namespace Maliboot\Lombok\Aspect;
+namespace MaliBoot\Lombok\Aspect;
 
 use Hyperf\Di\Annotation\Aspect;
 use Hyperf\Di\Aop\AbstractAspect;
 use Hyperf\Di\Aop\ProceedingJoinPoint;
-use Maliboot\Lombok\Annotation\Getter;
-use Maliboot\Lombok\Annotation\Logger;
-use Maliboot\Lombok\Annotation\Lombok;
-use Maliboot\Lombok\Annotation\Setter;
-use Maliboot\Lombok\Annotation\GetterSetter;
-use Maliboot\Lombok\Annotation\ToArray;
-use Maliboot\Lombok\Annotation\ToCollection;
+use MaliBoot\Lombok\Annotation\Getter;
+use MaliBoot\Lombok\Annotation\Logger;
+use MaliBoot\Lombok\Annotation\Lombok;
+use MaliBoot\Lombok\Annotation\Setter;
+use MaliBoot\Lombok\Annotation\GetterSetter;
+use MaliBoot\Lombok\Annotation\ToArray;
+use MaliBoot\Lombok\Annotation\ToCollection;
 
 #[Aspect]
 class InjectAspect extends AbstractAspect

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Maliboot\Lombok;
+namespace MaliBoot\Lombok;
 
 use Hyperf\Di\Aop\AstVisitorRegistry;
 use Hyperf\Di\Aop\RegisterInjectPropertyHandler;
-use Maliboot\Lombok\Ast\LombokVisitor;
-use Maliboot\Lombok\contract\DelegateInterface;
+use MaliBoot\Lombok\Ast\LombokVisitor;
+use MaliBoot\Lombok\contract\DelegateInterface;
 
 class ConfigProvider
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Maliboot\Lombok\Ast;
+namespace MaliBoot\Lombok\Ast;
 
 use PhpParser\Node\Stmt\Class_;
 use ReflectionClass;

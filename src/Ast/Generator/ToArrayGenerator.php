@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Maliboot\Lombok\Ast\Generator;
+namespace MaliBoot\Lombok\Ast\Generator;
 
 use Hyperf\Di\Aop\Ast;
-use Maliboot\Lombok\Ast\AbstractClassVisitor;
-use Maliboot\Lombok\contract\ToArrayAnnotationInterface;
+use MaliBoot\Lombok\Ast\AbstractClassVisitor;
+use MaliBoot\Lombok\contract\ToArrayAnnotationInterface;
 use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
@@ -38,7 +38,7 @@ class ToArrayGenerator extends AbstractClassVisitor
 class Template {
     public function toArray(): array 
     {
-        return \Hyperf\Context\ApplicationContext::getContainer()->get(\Maliboot\Lombok\contract\DelegateInterface::class)::toArray($this);
+        return \Hyperf\Context\ApplicationContext::getContainer()->get(\MaliBoot\Lombok\contract\DelegateInterface::class)::toArray($this);
     }
 }
 CODE;

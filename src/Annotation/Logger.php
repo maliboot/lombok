@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Maliboot\Lombok\Annotation;
+namespace MaliBoot\Lombok\Annotation;
 
 use Attribute;
 use Hyperf\Di\Annotation\AbstractAnnotation;
-use Maliboot\Lombok\contract\LoggerAnnotationInterface;
-use Maliboot\Lombok\Log\Log;
-use Maliboot\Lombok\Log\LoggerAnnotationTrait;
+use MaliBoot\Lombok\contract\LoggerAnnotationInterface;
+use MaliBoot\Lombok\Log\Log;
+use MaliBoot\Lombok\Log\LoggerAnnotationTrait;
 
 #[Attribute(Attribute::TARGET_CLASS)]
 class Logger extends AbstractAnnotation implements LoggerAnnotationInterface

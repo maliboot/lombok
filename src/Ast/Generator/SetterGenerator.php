@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Maliboot\Lombok\Ast\Generator;
+namespace MaliBoot\Lombok\Ast\Generator;
 
-use Maliboot\Lombok\Ast\AbstractClassVisitor;
-use Maliboot\Lombok\contract\SetterAnnotationInterface;
+use MaliBoot\Lombok\Ast\AbstractClassVisitor;
+use MaliBoot\Lombok\contract\SetterAnnotationInterface;
 use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\Variable;

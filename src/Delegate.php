@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Maliboot\Lombok;
+namespace MaliBoot\Lombok;
 
 use Hyperf\Collection\Collection;
-use Maliboot\Lombok\contract\DelegateInterface;
-use Maliboot\Lombok\Log\Log;
+use MaliBoot\Lombok\contract\DelegateInterface;
+use MaliBoot\Lombok\Log\Log;
 use Psr\Log\LoggerInterface;
 use ReflectionClass;
 

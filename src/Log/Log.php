@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Maliboot\Lombok\Log;
+namespace MaliBoot\Lombok\Log;
 
 use Hyperf\Context\ApplicationContext;
 use Hyperf\Logger\LoggerFactory;

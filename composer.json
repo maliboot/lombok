@@ -1,6 +1,6 @@
 {
   "name": "maliboot/lombok",
-  "description": "A plugin library for Maliboot.",
+  "description": "A plugin library for MaliBoot.",
   "license": "MIT",
   "keywords": [
     "php",
@@ -19,7 +19,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Maliboot\\Lombok\\": "src/"
+      "MaliBoot\\Lombok\\": "src/"
     },
     "files": [
     ]
@@ -33,7 +33,7 @@
   },
   "extra": {
     "hyperf": {
-      "config": "Maliboot\\Lombok\\ConfigProvider"
+      "config": "MaliBoot\\Lombok\\ConfigProvider"
     }
   }
 }

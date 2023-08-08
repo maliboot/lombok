@@ -1,9 +1,9 @@
 <?php
 
-namespace Maliboot\Lombok\contract;
+namespace MaliBoot\Lombok\contract;
 
 use Hyperf\Collection\Collection;
-use Maliboot\Lombok\Log\Log;
+use MaliBoot\Lombok\Log\Log;
 use Psr\Log\LoggerInterface;
 
 interface DelegateInterface

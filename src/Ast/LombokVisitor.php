@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Maliboot\Lombok\Ast;
+namespace MaliBoot\Lombok\Ast;
 
 use Hyperf\Di\Aop\VisitorMetadata;
-use Maliboot\Lombok\Ast\Generator\GetterGenerator;
-use Maliboot\Lombok\Ast\Generator\LoggerGenerator;
-use Maliboot\Lombok\Ast\Generator\SetterGenerator;
-use Maliboot\Lombok\Ast\Generator\ToArrayGenerator;
-use Maliboot\Lombok\Ast\Generator\ToCollectionGenerator;
+use MaliBoot\Lombok\Ast\Generator\GetterGenerator;
+use MaliBoot\Lombok\Ast\Generator\LoggerGenerator;
+use MaliBoot\Lombok\Ast\Generator\SetterGenerator;
+use MaliBoot\Lombok\Ast\Generator\ToArrayGenerator;
+use MaliBoot\Lombok\Ast\Generator\ToCollectionGenerator;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;

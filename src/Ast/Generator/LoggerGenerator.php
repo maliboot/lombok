@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Maliboot\Lombok\Ast\Generator;
+namespace MaliBoot\Lombok\Ast\Generator;
 
 use Hyperf\Di\Aop\Ast;
-use Maliboot\Lombok\Ast\AbstractClassVisitor;
-use Maliboot\Lombok\contract\LoggerAnnotationInterface;
-use Maliboot\Lombok\Log\Log;
+use MaliBoot\Lombok\Ast\AbstractClassVisitor;
+use MaliBoot\Lombok\contract\LoggerAnnotationInterface;
+use MaliBoot\Lombok\Log\Log;
 use PhpParser\Node\Stmt;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
@@ -39,7 +39,7 @@ class LoggerGenerator extends AbstractClassVisitor
 class Template {
     public \Psr\Log\LoggerInterface $logger;
     public function __construct(){
-        $this->logger = \Hyperf\Context\ApplicationContext::getContainer()->get(\Maliboot\Lombok\contract\DelegateInterface::class)::log('{{$name}}', '{{$group}}');
+        $this->logger = \Hyperf\Context\ApplicationContext::getContainer()->get(\MaliBoot\Lombok\contract\DelegateInterface::class)::log('{{$name}}', '{{$group}}');
     }
 }
 CODE;

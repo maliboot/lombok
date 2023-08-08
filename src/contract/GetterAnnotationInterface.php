@@ -1,6 +1,6 @@
 <?php
 
-namespace Maliboot\Lombok\contract;
+namespace MaliBoot\Lombok\contract;
 
 use Hyperf\Di\Annotation\AnnotationInterface;
 
