@@ -1,9 +1,9 @@
 <?php
 
-namespace MaliBoot\Lombok\contract;
+declare(strict_types=1);
 
-use Hyperf\Di\Annotation\AnnotationInterface;
+namespace MaliBoot\Lombok\Contract;
 
-interface ToArrayAnnotationInterface extends AnnotationInterface
+interface ToArrayAnnotationInterface extends GetterAnnotationInterface
 {
 }
