@@ -4,75 +4,46 @@ declare(strict_types=1);
 
 namespace MaliBoot\Lombok\Ast\Generator;
 
-use MaliBoot\Lombok\Ast\AbstractClassVisitor;
-use MaliBoot\Lombok\contract\SetterAnnotationInterface;
-use PhpParser\Node\Expr\Assign;
-use PhpParser\Node\Expr\PropertyFetch;
-use PhpParser\Node\Expr\Variable;
-use PhpParser\Node\Identifier;
-use PhpParser\Node\Name;
-use PhpParser\Node\Param;
-use PhpParser\Node\Stmt\ClassMethod;
-use PhpParser\Node\Stmt\Expression;
-use PhpParser\Node\Stmt\Property;
-use PhpParser\Node\Stmt\Return_;
-use ReflectionAttribute;
+use MaliBoot\Lombok\Annotation\LombokGenerator;
+use MaliBoot\Lombok\Ast\AbstractClassFieldVisitor;
+use MaliBoot\Lombok\Contract\SetterAnnotationInterface;
 
-class SetterGenerator extends AbstractClassVisitor
+#[LombokGenerator]
+class SetterGenerator extends AbstractClassFieldVisitor
 {
-    protected function handle(): void
+    protected function getClassMemberName(): string
     {
-        foreach ($this->class_->getProperties() as $property_) {
-            $this->isStmtBuild($property_) && $this->buildStmt($property_);
-        }
+        return 'set' . ucfirst($this->reflectionProperty->getName());
     }
 
-    protected function enable(): bool
+    protected function getAnnotationInterface(): string
     {
-        return true;
+        return SetterAnnotationInterface::class;
     }
 
-    protected function isStmtBuild(Property $property_): bool
+    protected function getClassCodeSnippet(): string
     {
-        $fieldName = $property_->props[0]->name->name;
-        // 不覆盖已存在的方法
-        if ($this->reflectionClass->hasMethod('set' . ucfirst($fieldName))) {
-            return false;
-        }
-
-        // 类注解
-        $attributes = $this->reflectionClass->getAttributes(SetterAnnotationInterface::class, ReflectionAttribute::IS_INSTANCEOF);
-        if (! empty($attributes)) {
-            return true;
-        }
-
-        // 类属性注解
-        $reflectionProperty = $this->reflectionClass->getProperty($fieldName);
-        $attributes = $reflectionProperty->getAttributes(SetterAnnotationInterface::class, ReflectionAttribute::IS_INSTANCEOF);
-        if (! empty($attributes)) {
-            return true;
-        }
-        return false;
+        $code = <<<'CODE'
+<?php
+class Template {
+    public function {{METHOD_NAME}}({{RETURN_TYPE}} ${{PROPERTY_NAME}}{{PROPERTY_DEFAULT}}): self {
+        $this->{{PROPERTY_NAME}} = ${{PROPERTY_NAME}};
+        return $this;
     }
-
-    protected function buildStmt(Property $property_): void
-    {
-        $fieldName = $property_->props[0]->name->name;
-        $fun = new ClassMethod('set' . ucfirst($fieldName));
-        $fun->params[] = new Param(new Variable($fieldName), $property_->props[0]->default, $property_->type);
-        $fun->returnType = new Name('self');
-        $fun->stmts[] = new Expression(
-            new Assign(
-                new PropertyFetch(
-                    new Variable('this'),
-                    new Identifier($fieldName)
-                ),
-                new Variable($fieldName)
-            )
+}
+CODE;
+        $fieldName = $this->reflectionProperty->getName();
+        $default = $this->reflectionProperty->hasDefaultValue() ? ' = ' . $this->reflectionProperty->getDefaultValue() : '';
+        $type = $this->reflectionProperty->hasType() ? (string) $this->reflectionProperty->getType() : '';
+        return str_replace(
+            ['{{METHOD_NAME}}', '{{RETURN_TYPE}}', '{{PROPERTY_NAME}}', '{{PROPERTY_DEFAULT}}'],
+            [
+                $this->getClassMemberName(),
+                $type,
+                $fieldName,
+                $default,
+            ],
+            $code,
         );
-        $fun->stmts[] = new Return_(
-            new Variable('this')
-        );
-        $this->class_->stmts = array_merge($this->class_->stmts, [$fun]);
     }
 }

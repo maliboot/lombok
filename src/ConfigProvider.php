@@ -7,7 +7,6 @@ namespace MaliBoot\Lombok;
 use Hyperf\Di\Aop\AstVisitorRegistry;
 use Hyperf\Di\Aop\RegisterInjectPropertyHandler;
 use MaliBoot\Lombok\Ast\LombokVisitor;
-use MaliBoot\Lombok\contract\DelegateInterface;
 
 class ConfigProvider
 {
@@ -23,7 +22,6 @@ class ConfigProvider
             'commands' => [
             ],
             'dependencies' => [
-                DelegateInterface::class => Delegate::class,
             ],
             'listeners' => [
             ],

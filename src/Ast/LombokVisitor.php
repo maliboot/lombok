@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace MaliBoot\Lombok\Ast;
 
+use Hyperf\Di\Annotation\AnnotationCollector;
 use Hyperf\Di\Aop\VisitorMetadata;
-use MaliBoot\Lombok\Ast\Generator\GetterGenerator;
-use MaliBoot\Lombok\Ast\Generator\LoggerGenerator;
-use MaliBoot\Lombok\Ast\Generator\SetterGenerator;
-use MaliBoot\Lombok\Ast\Generator\ToArrayGenerator;
-use MaliBoot\Lombok\Ast\Generator\ToCollectionGenerator;
+use MaliBoot\Lombok\Annotation\LombokGenerator;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
@@ -70,18 +67,27 @@ class LombokVisitor extends NodeVisitorAbstract
 
     private function visitClass(Class_ $class_): void
     {
-        $generators = [
-            SetterGenerator::class,
-            GetterGenerator::class,
-            LoggerGenerator::class,
-            ToArrayGenerator::class,
-            ToCollectionGenerator::class,
-        ];
         $classReflection = new ReflectionClass($this->visitorMetadata->className);
-        foreach ($generators as $generator) {
-            /** @var AbstractClassVisitor $generator ... */
-            $generatorIns = new $generator($classReflection, $class_);
-            $generatorIns->execute();
+        $generatorAnnotationList = AnnotationCollector::getClassesByAnnotation(LombokGenerator::class);
+
+        foreach ($generatorAnnotationList as $generatorClassName => $generatorAnnotation) {
+            if (! is_subclass_of($generatorClassName, AbstractVisitor::class)) {
+                continue;
+            }
+
+            // classAnnotation
+            if (is_subclass_of($generatorClassName, AbstractClassVisitor::class)) {
+                $generatorIns = new $generatorClassName($class_, $classReflection);
+                $generatorIns->execute();
+            }
+
+            // classFieldAnnotation
+            if (is_subclass_of($generatorClassName, AbstractClassFieldVisitor::class)) {
+                foreach ($classReflection->getProperties() as $reflectionProperty) {
+                    $generatorIns = new $generatorClassName($class_, $reflectionProperty);
+                    $generatorIns->execute();
+                }
+            }
         }
     }
 

@@ -6,11 +6,11 @@ namespace MaliBoot\Lombok\Annotation;
 
 use Attribute;
 use Hyperf\Di\Annotation\AbstractAnnotation;
-use MaliBoot\Lombok\contract\GetterAnnotationInterface;
-use MaliBoot\Lombok\contract\LoggerAnnotationInterface;
-use MaliBoot\Lombok\contract\SetterAnnotationInterface;
-use MaliBoot\Lombok\contract\ToArrayAnnotationInterface;
-use MaliBoot\Lombok\contract\ToCollectionAnnotationInterface;
+use MaliBoot\Lombok\Contract\GetterAnnotationInterface;
+use MaliBoot\Lombok\Contract\LoggerAnnotationInterface;
+use MaliBoot\Lombok\Contract\SetterAnnotationInterface;
+use MaliBoot\Lombok\Contract\ToArrayAnnotationInterface;
+use MaliBoot\Lombok\Contract\ToCollectionAnnotationInterface;
 use MaliBoot\Lombok\Log\LoggerAnnotationTrait;
 
 #[Attribute(Attribute::TARGET_CLASS)]

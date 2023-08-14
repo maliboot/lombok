@@ -4,65 +4,43 @@ declare(strict_types=1);
 
 namespace MaliBoot\Lombok\Ast\Generator;
 
-use MaliBoot\Lombok\Ast\AbstractClassVisitor;
-use MaliBoot\Lombok\contract\GetterAnnotationInterface;
-use PhpParser\Node\Expr\PropertyFetch;
-use PhpParser\Node\Expr\Variable;
-use PhpParser\Node\Identifier;
-use PhpParser\Node\Stmt\ClassMethod;
-use PhpParser\Node\Stmt\Property;
-use PhpParser\Node\Stmt\Return_;
-use ReflectionAttribute;
+use MaliBoot\Lombok\Annotation\LombokGenerator;
+use MaliBoot\Lombok\Ast\AbstractClassFieldVisitor;
+use MaliBoot\Lombok\Contract\GetterAnnotationInterface;
 
-class GetterGenerator extends AbstractClassVisitor
+#[LombokGenerator]
+class GetterGenerator extends AbstractClassFieldVisitor
 {
-    protected function handle(): void
+    protected function getClassMemberName(): string
     {
-        foreach ($this->class_->getProperties() as $property_) {
-            $this->isStmtBuild($property_) && $this->buildStmt($property_);
-        }
+        return 'get' . ucfirst($this->reflectionProperty->getName());
     }
 
-    protected function enable(): bool
+    protected function getAnnotationInterface(): string
     {
-        return true;
+        return GetterAnnotationInterface::class;
     }
 
-    protected function isStmtBuild(Property $property_): bool
+    protected function getClassCodeSnippet(): string
     {
-        $fieldName = $property_->props[0]->name->name;
-        // 不覆盖已存在的方法
-        if ($this->reflectionClass->hasMethod('get' . ucfirst($fieldName))) {
-            return false;
-        }
-
-        // 类注解
-        $attributes = $this->reflectionClass->getAttributes(GetterAnnotationInterface::class, ReflectionAttribute::IS_INSTANCEOF);
-        if (! empty($attributes)) {
-            return true;
-        }
-
-        // 类属性注解
-        $reflectionProperty = $this->reflectionClass->getProperty($fieldName);
-        $attributes = $reflectionProperty->getAttributes(GetterAnnotationInterface::class, ReflectionAttribute::IS_INSTANCEOF);
-        if (! empty($attributes)) {
-            return true;
-        }
-        return false;
+        $code = <<<'CODE'
+<?php
+class Template {
+    public function {{METHOD_NAME}}(): {{RETURN_TYPE}} {
+        return $this->{{PROPERTY_NAME}};
     }
-
-    protected function buildStmt(Property $property_): void
-    {
-        $fieldName = $property_->props[0]->name->name;
-        $fieldType = $property_->type;
-        $fun = new ClassMethod('get' . ucfirst($fieldName));
-        $fun->returnType = $fieldType;
-        $fun->stmts[] = new Return_(
-            new PropertyFetch(
-                new Variable('this'),
-                new Identifier($fieldName)
-            ),
+}
+CODE;
+        $fieldName = $this->reflectionProperty->getName();
+        $type = $this->reflectionProperty->hasType() ? (string) $this->reflectionProperty->getType() : '';
+        return str_replace(
+            ['{{METHOD_NAME}}', '{{RETURN_TYPE}}', '{{PROPERTY_NAME}}'],
+            [
+                $this->getClassMemberName(),
+                $type,
+                $fieldName,
+            ],
+            $code,
         );
-        $this->class_->stmts = array_merge($this->class_->stmts, [$fun]);
     }
 }

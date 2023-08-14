@@ -6,10 +6,10 @@ namespace MaliBoot\Lombok\Annotation;
 
 use Attribute;
 use Hyperf\Di\Annotation\AbstractAnnotation;
-use MaliBoot\Lombok\contract\GetterAnnotationInterface;
-use MaliBoot\Lombok\contract\ToArrayAnnotationInterface;
+use MaliBoot\Lombok\Contract\GetterAnnotationInterface;
+use MaliBoot\Lombok\Contract\ToArrayAnnotationInterface;
 
 #[Attribute(Attribute::TARGET_CLASS)]
-class ToArray extends AbstractAnnotation implements ToArrayAnnotationInterface, GetterAnnotationInterface
+class ToArray extends AbstractAnnotation implements ToArrayAnnotationInterface
 {
 }

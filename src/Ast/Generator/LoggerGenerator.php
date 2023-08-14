@@ -4,31 +4,31 @@ declare(strict_types=1);
 
 namespace MaliBoot\Lombok\Ast\Generator;
 
-use Hyperf\Di\Aop\Ast;
+use MaliBoot\Lombok\Annotation\LombokGenerator;
 use MaliBoot\Lombok\Ast\AbstractClassVisitor;
-use MaliBoot\Lombok\contract\LoggerAnnotationInterface;
+use MaliBoot\Lombok\Contract\LoggerAnnotationInterface;
 use MaliBoot\Lombok\Log\Log;
-use PhpParser\Node\Stmt;
-use PhpParser\Node\Stmt\Class_;
-use PhpParser\Node\Stmt\ClassMethod;
 use ReflectionAttribute;
 
+#[LombokGenerator]
 class LoggerGenerator extends AbstractClassVisitor
 {
-    protected function enable(): bool
+    protected function getClassMemberType(): string
     {
-        if ($this->reflectionClass->hasProperty('logger')) {
-            return false;
-        }
-
-        $attributes = $this->reflectionClass->getAttributes(LoggerAnnotationInterface::class, ReflectionAttribute::IS_INSTANCEOF);
-        if (! empty($attributes)) {
-            return true;
-        }
-        return false;
+        return parent::PROPERTY;
     }
 
-    protected function handle(): void
+    protected function getClassMemberName(): string
+    {
+        return 'logger';
+    }
+
+    protected function getAnnotationInterface(): string
+    {
+        return LoggerAnnotationInterface::class;
+    }
+
+    protected function getClassCodeSnippet(): string
     {
         /** @var ReflectionAttribute $attribute */
         $reflectionAttribute = $this->reflectionClass->getAttributes(LoggerAnnotationInterface::class, ReflectionAttribute::IS_INSTANCEOF)[0];
@@ -39,25 +39,11 @@ class LoggerGenerator extends AbstractClassVisitor
 class Template {
     public \Psr\Log\LoggerInterface $logger;
     public function __construct(){
-        $this->logger = \Hyperf\Context\ApplicationContext::getContainer()->get(\MaliBoot\Lombok\contract\DelegateInterface::class)::log('{{$name}}', '{{$group}}');
+        $this->logger = \MaliBoot\Lombok\Log\Log::get('{{$name}}', '{{$group}}');
     }
 }
 CODE;
-        $code = str_replace(['{{$name}}', '{{$group}}'], $this->getDefaultLogParams($attribute), $code);
-        $parser = new Ast();
-        /** @var Class_ $tpl ... */
-        $tpl = $parser->parse($code)[0];
-        /** @var ClassMethod $tplMethod ... */
-        [$tplProperty, $tplMethod] = $tpl->stmts;
-
-        // 避免重复的构建方法
-        $this->class_->stmts = array_reduce($this->class_->stmts, function (array $carry, Stmt $item) use ($tplMethod) {
-            if ($item instanceof ClassMethod && $item->name->toString() === $tplMethod->name->toString()) {
-                $item->stmts = [...$item->stmts, ...$tplMethod->stmts];
-            }
-            $carry[] = $item;
-            return $carry;
-        }, [$tplProperty]);
+        return str_replace(['{{$name}}', '{{$group}}'], $this->getDefaultLogParams($attribute), $code);
     }
 
     protected function getDefaultLogParams(LoggerAnnotationInterface $logger): array

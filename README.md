@@ -101,7 +101,7 @@ namespace App/Annotation;
 
 use Attribute;
 use Hyperf\Di\Annotation\AbstractAnnotation;
-use MaliBoot\Lombok\contract\GetterAnnotationInterface;
+use MaliBoot\Lombok\Contract\GetterAnnotationInterface;
 
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_PROPERTY)]
 class MyGetter extends AbstractAnnotation implements GetterAnnotationInterface
@@ -109,7 +109,7 @@ class MyGetter extends AbstractAnnotation implements GetterAnnotationInterface
 }
 ```
 
-* 创建完注解后，只要此注解继承了`\MaliBoot\Lombok\contract\GetterAnnotationInterface`，此注解将自动拥有原`\MaliBoot\Lombok\Annotation\Getter`的功能
+* 创建完注解后，只要此注解继承了`\MaliBoot\Lombok\Contract\GetterAnnotationInterface`，此注解将自动拥有原`\MaliBoot\Lombok\Annotation\Getter`的功能
 ```
 // app/Foo.php
 <?php
@@ -135,17 +135,17 @@ var_dump((new Foo)->getId()); // output: 1
 
 | 注解接口                                                        | 功能                                                                      |
 |:------------------------------------------------------------|:------------------------------------------------------------------------|
-| `\MaliBoot\Lombok\contract\GetterAnnotationInterface`       | 生成类属性`Getter`方法                                                         |
-| `\MaliBoot\Lombok\contract\SetterAnnotationInterface`       | 生成类属性`Setter`方法                                                         |
-| `\MaliBoot\Lombok\contract\LoggerAnnotationInterface`       | 生成类属性`public \Psr\Log\LoggerInterface $logger`                          |
-| `\MaliBoot\Lombok\contract\ToArrayAnnotationInterface`      | 生成类方法`public static function toArray(object $class): array`             |
-| `\MaliBoot\Lombok\contract\ToCollectionAnnotationInterface` | 生成类方法`public static function toCollection(object $class): Collection`方法 |
+| `\MaliBoot\Lombok\Contract\GetterAnnotationInterface`       | 生成类属性`Getter`方法                                                         |
+| `\MaliBoot\Lombok\Contract\SetterAnnotationInterface`       | 生成类属性`Setter`方法                                                         |
+| `\MaliBoot\Lombok\Contract\LoggerAnnotationInterface`       | 生成类属性`public \Psr\Log\LoggerInterface $logger`                          |
+| `\MaliBoot\Lombok\Contract\ToArrayAnnotationInterface`      | 生成类方法`public static function toArray(object $class): array`             |
+| `\MaliBoot\Lombok\Contract\ToCollectionAnnotationInterface` | 生成类方法`public static function toCollection(object $class): Collection`方法 |
 
 ###### 1.3.4、自定义`日志实例`、`toArray()`、`toCollection()`实现
 * 1.3.4.1 目前当前功能实现在`\MaliBoot\Lombok\Delegate`内
 * 1.3.4.2 `hyperf`中自定义实现
-  * 自定义实现类，如`\App\Foo`，并继承`\MaliBoot\Lombok\contract\DelegateInterface`
-  * 绑定依赖，在`config.dependencies`内配置`\MaliBoot\Lombok\contract\DelegateInterface => \App\Foo::class`
+  * 自定义实现类，如`\App\Foo`，并继承`\MaliBoot\Lombok\Contract\DelegateInterface`
+  * 绑定依赖，在`config.dependencies`内配置`\MaliBoot\Lombok\Contract\DelegateInterface => \App\Foo::class`
 * 1.3.4.3 非`hyperf`中自定义实现
   * todo
 

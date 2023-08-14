@@ -6,7 +6,7 @@ namespace MaliBoot\Lombok\Annotation;
 
 use Attribute;
 use Hyperf\Di\Annotation\AbstractAnnotation;
-use MaliBoot\Lombok\contract\LoggerAnnotationInterface;
+use MaliBoot\Lombok\Contract\LoggerAnnotationInterface;
 use MaliBoot\Lombok\Log\Log;
 use MaliBoot\Lombok\Log\LoggerAnnotationTrait;
 
