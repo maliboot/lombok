@@ -174,7 +174,7 @@ var_dump((new Foo)->getId()); // output: 1
 | `\MaliBoot\Lombok\Contract\DelegateAnnotationInterface`     | 生成类委托，可将本类不存在的常量、属性、方法委托给其它`interface`、`abstract class`、`class`处理（暂不支持含有抽象方法的接口与抽象类） |
 
 ###### 1.3.4、自定义`lombok`注解
-####### 当然，我们也可以自己做一个`lombok`功能。比如，我们给`./app/Foo.php`扩展一个`swap`方法。
+当然，我们也可以自己做一个`lombok`功能。比如，我们给`./app/Foo.php`扩展一个`swap`方法。
 *  第1步，添加一个注解接口，用于生成代理代码与自定义组合的凭据
 ```
 <?php
@@ -186,7 +186,9 @@ interface SwapAnnotationInterface
 }
 ```
 
-* 第2步，添加`lombok`注解
+* 第2步，添加`lombok`注解，并继承`\App\Contract\SwapAnnotationInterface`接口。
+> 注意：此步骤非必须，如果已有现成的其它注解如`\App\Annotation\Controller`，可以直接在该注解内继承`swap`接口也可以
+>> \App\Annotation\Controller implements \App\Contract\SwapAnnotationInterface
 ```
 <?php
 
