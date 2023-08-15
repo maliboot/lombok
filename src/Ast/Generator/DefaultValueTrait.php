@@ -14,6 +14,10 @@ trait DefaultValueTrait
             return $val ? 'true' : 'false';
         }
 
+        if (is_array($val)) {
+            return var_export($val, true);
+        }
+
         return (string) $val;
     }
 }
