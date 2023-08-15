@@ -34,11 +34,13 @@ class DelegateGenerator extends AbstractClassVisitor
         $code = <<<'CODE'
 <?php
 class Template {
+    {{OTHER_EXTEND_CODE}}
     private {{DELEGATE_CLASS}} $_delegate;
     {{CONST}}
     
     public function __construct(){
         {{DELEGATE_CONSTRUCT_CODE}}
+        {{CONSTRUCT_EXTEND_CODE}}
     }
     
     public function getMyDelegate() {
@@ -74,7 +76,7 @@ class Template {
     }
 }
 CODE;
-        $delegateInstanceCodeSnippet = $this->getDelegateInstanceCodeSnippet();
+        $delegateInstanceCodeSnippet = $this->getAbstractInsCodeSnippet();
         $delegateClassName = $this->getDelegateClassName();
         $delegateClassName[0] !== '\\' && $delegateClassName = '\\' . $delegateClassName;
 
@@ -123,14 +125,32 @@ CODE;
             $delegateConstructParameter = implode(',', $delegateConstructParameterArr);
             $delegateConstructCode = "\$this->_delegate = new class({$delegateConstructParameter}) extends {$delegateClassName} { {$delegateInstanceCodeSnippet} };";
         }
+
+        $constructCode = $this->getConstructCodeSnippet();
+        $otherCode = $this->getOtherContentCodeSnippet();
         return str_replace(
-            ['{{DELEGATE_CLASS}}', '{{DELEGATE_CONSTRUCT_CODE}}', '{{CONST}}'],
-            [$delegateClassName, $delegateConstructCode, $delegateConstStr],
+            ['{{DELEGATE_CLASS}}', '{{DELEGATE_CONSTRUCT_CODE}}', '{{CONST}}', '{{CONSTRUCT_EXTEND_CODE}}', '{{OTHER_EXTEND_CODE}}'],
+            [$delegateClassName, $delegateConstructCode, $delegateConstStr, $constructCode, $otherCode],
             $code
         );
     }
 
-    protected function getDelegateInstanceCodeSnippet(): string
+    protected function getInsCodeSnippet(): string
+    {
+        return '';
+    }
+
+    protected function getAbstractInsCodeSnippet(): string
+    {
+        return '';
+    }
+
+    protected function getConstructCodeSnippet(): string
+    {
+        return '';
+    }
+
+    protected function getOtherContentCodeSnippet(): string
     {
         return '';
     }
