@@ -21,12 +21,7 @@ class DelegateGenerator extends AbstractClassVisitor
 
     protected function getClassMemberName(): string
     {
-        return '_delegate';
-    }
-
-    protected function getClassMemberType(): string
-    {
-        return parent::PROPERTY;
+        return 'getMyDelegate';
     }
 
     protected function getAnnotationInterface(): string
@@ -36,10 +31,6 @@ class DelegateGenerator extends AbstractClassVisitor
 
     protected function getClassCodeSnippet(): string
     {
-        /** @var ReflectionAttribute $attribute */
-        $reflectionAttribute = $this->reflectionClass->getAttributes(DelegateAnnotationInterface::class, ReflectionAttribute::IS_INSTANCEOF)[0];
-        /** @var DelegateAnnotationInterface $attribute */
-        $attribute = $reflectionAttribute->newInstance();
         $code = <<<'CODE'
 <?php
 class Template {
@@ -48,6 +39,10 @@ class Template {
     
     public function __construct(){
         {{DELEGATE_CONSTRUCT_CODE}}
+    }
+    
+    public function getMyDelegate() {
+        return $this->_delegate;
     }
     
     public function __call($name, $arguments)
@@ -79,7 +74,8 @@ class Template {
     }
 }
 CODE;
-        $delegateClassName = $attribute->getDelegateClassName();
+        $delegateInstanceCodeSnippet = $this->getDelegateInstanceCodeSnippet();
+        $delegateClassName = $this->getDelegateClassName();
         $delegateClassName[0] !== '\\' && $delegateClassName = '\\' . $delegateClassName;
 
         $delegateConstructCode = "\$this->_delegate = \\Hyperf\\Support\\make({$delegateClassName}::class);";
@@ -102,7 +98,7 @@ CODE;
 
         // 接口委托
         if ($delegateReflectionClass->isInterface()) {
-            $delegateConstructCode = "\$this->_delegate = new class() implements {$delegateClassName} {};";
+            $delegateConstructCode = "\$this->_delegate = new class() implements {$delegateClassName} { {$delegateInstanceCodeSnippet} };";
         }
 
         // 抽象类委托
@@ -125,12 +121,27 @@ CODE;
                 }
             }
             $delegateConstructParameter = implode(',', $delegateConstructParameterArr);
-            $delegateConstructCode = "\$this->_delegate = new class({$delegateConstructParameter}) extends {$delegateClassName} {};";
+            $delegateConstructCode = "\$this->_delegate = new class({$delegateConstructParameter}) extends {$delegateClassName} { {$delegateInstanceCodeSnippet} };";
         }
         return str_replace(
             ['{{DELEGATE_CLASS}}', '{{DELEGATE_CONSTRUCT_CODE}}', '{{CONST}}'],
             [$delegateClassName, $delegateConstructCode, $delegateConstStr],
             $code
         );
+    }
+
+    protected function getDelegateInstanceCodeSnippet(): string
+    {
+        return '';
+    }
+
+    protected function getDelegateClassName(): string
+    {
+        /** @var ReflectionAttribute $attribute */
+        $reflectionAttribute = $this->reflectionClass->getAttributes(DelegateAnnotationInterface::class, ReflectionAttribute::IS_INSTANCEOF)[0];
+        /** @var DelegateAnnotationInterface $attribute */
+        $attribute = $reflectionAttribute->newInstance();
+
+        return $attribute->getDelegateClassName();
     }
 }
