@@ -17,6 +17,8 @@ use ReflectionNamedType;
 #[LombokGenerator]
 class DelegateGenerator extends AbstractClassVisitor
 {
+    use DefaultValueTrait;
+
     protected function getClassMemberName(): string
     {
         return '_delegate';
@@ -130,18 +132,5 @@ CODE;
             [$delegateClassName, $delegateConstructCode, $delegateConstStr],
             $code
         );
-    }
-
-    private function getValString($val): string
-    {
-        if (is_string($val)) {
-            return "'" . $val . "'";
-        }
-
-        if (is_bool($val)) {
-            return $val ? 'true' : 'false';
-        }
-
-        return (string) $val;
     }
 }

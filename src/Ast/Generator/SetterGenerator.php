@@ -11,6 +11,8 @@ use MaliBoot\Lombok\Contract\SetterAnnotationInterface;
 #[LombokGenerator]
 class SetterGenerator extends AbstractClassFieldVisitor
 {
+    use DefaultValueTrait;
+
     protected function getClassMemberName(): string
     {
         return 'set' . ucfirst($this->reflectionProperty->getName());
@@ -33,7 +35,7 @@ class Template {
 }
 CODE;
         $fieldName = $this->reflectionProperty->getName();
-        $default = $this->reflectionProperty->hasDefaultValue() ? ' = ' . $this->reflectionProperty->getDefaultValue() : '';
+        $default = $this->reflectionProperty->hasDefaultValue() ? ' = ' . $this->getValString($this->reflectionProperty->getDefaultValue()) : '';
         $type = $this->reflectionProperty->hasType() ? (string) $this->reflectionProperty->getType() : '';
         return str_replace(
             ['{{METHOD_NAME}}', '{{RETURN_TYPE}}', '{{PROPERTY_NAME}}', '{{PROPERTY_DEFAULT}}'],
