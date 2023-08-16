@@ -21,7 +21,7 @@ class DelegateGenerator extends AbstractClassVisitor
 
     protected function getClassMemberName(): string
     {
-        return 'getMyDelegate';
+        return 'Delegate';
     }
 
     protected function getAnnotationInterface(): string
@@ -35,7 +35,7 @@ class DelegateGenerator extends AbstractClassVisitor
 <?php
 class Template {
     {{OTHER_EXTEND_CODE}}
-    private {{DELEGATE_CLASS}} $_delegate;
+    private {{DELEGATE_CLASS}} $myDelegate;
     {{CONST}}
     
     public function __construct(){
@@ -44,13 +44,13 @@ class Template {
     }
     
     public function getMyDelegate() {
-        return $this->_delegate;
+        return $this->myDelegate;
     }
     
     public function __call($name, $arguments)
     {
-        if (method_exists($this->_delegate, $name)) {
-            return $this->_delegate->{$name}(...$arguments);
+        if (method_exists($this->myDelegate, $name)) {
+            return $this->myDelegate->{$name}(...$arguments);
         }
     }
 
@@ -63,15 +63,15 @@ class Template {
     
     public function __get($name)
     {
-        if (property_exists($this->_delegate, $name)) {
-            return $this->_delegate->{$name};
+        if (property_exists($this->myDelegate, $name)) {
+            return $this->myDelegate->{$name};
         }
     }
     
     public function __set($name, $value)
     {
-        if (property_exists($this->_delegate, $name)) {
-            $this->_delegate->{$name} = $value;
+        if (property_exists($this->myDelegate, $name)) {
+            $this->myDelegate->{$name} = $value;
         }
     }
 }
@@ -80,7 +80,7 @@ CODE;
         $delegateClassName = $this->getDelegateClassName();
         $delegateClassName[0] !== '\\' && $delegateClassName = '\\' . $delegateClassName;
 
-        $delegateConstructCode = "\$this->_delegate = \\Hyperf\\Support\\make({$delegateClassName}::class);";
+        $delegateConstructCode = "\$this->myDelegate = \\Hyperf\\Support\\make({$delegateClassName}::class);";
         $delegateReflectionClass = new ReflectionClass($delegateClassName);
         if (! empty($delegateReflectionClass->getMethods(ReflectionMethod::IS_ABSTRACT))) {
             throw new LombokException(sprintf('[%s]委托异常: 委托类[%s]不可以有抽象方法', $this->reflectionClass->getName(), $delegateClassName));
@@ -100,7 +100,7 @@ CODE;
 
         // 接口委托
         if ($delegateReflectionClass->isInterface()) {
-            $delegateConstructCode = "\$this->_delegate = new class() implements {$delegateClassName} { {$delegateInstanceCodeSnippet} };";
+            $delegateConstructCode = "\$this->myDelegate = new class() implements {$delegateClassName} { {$delegateInstanceCodeSnippet} };";
         }
 
         // 抽象类委托
@@ -123,7 +123,7 @@ CODE;
                 }
             }
             $delegateConstructParameter = implode(',', $delegateConstructParameterArr);
-            $delegateConstructCode = "\$this->_delegate = new class({$delegateConstructParameter}) extends {$delegateClassName} { {$delegateInstanceCodeSnippet} };";
+            $delegateConstructCode = "\$this->myDelegate = new class({$delegateConstructParameter}) extends {$delegateClassName} { {$delegateInstanceCodeSnippet} };";
         }
 
         $constructCode = $this->getConstructCodeSnippet();
