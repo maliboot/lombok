@@ -48,6 +48,7 @@ class Template {
     }
     
     public static function getDelegateInstance(self $delegatedSource): {{DELEGATE_CLASS}} {
+        // $delegatedSource可用于第三方模板扩展
         {{DELEGATE_NEW_CODE}}
     }
     
@@ -60,7 +61,7 @@ class Template {
 
     public static function __callStatic($name, $arguments)
     {
-        if (method_exists('{{DELEGATE_CLASS}}', $name)) {
+        if (method_exists('{{DELEGATE_CLASS}}', $name) || method_exists('{{DELEGATE_CLASS}}', '__callStatic')) {
             return self::getDelegateInstance(\Hyperf\Support\make(self::class))::{$name}(...$arguments);
         }
     }
@@ -134,40 +135,25 @@ CODE;
 
     protected function getDelegateNewCode(ReflectionClass $delegateReflectionClass): string
     {
+        $templateClassName = "\\{$this->reflectionClass->getName()}";
         $delegateClassName = $this->getFormatDelegateClassName();
         $delegateStmts = $this->getDelegateClassStmts();
-        $delegateConstructParams = $this->getDelegateConstructParameters($delegateReflectionClass);
-        $delegateConstructParamsSign = implode(',', array_keys($delegateConstructParams));
-        $delegateConstructParamsVal = implode(',', array_values($delegateConstructParams));
-        $delegateConstructParamsValTypeNames = array_map(function ($item) {
-            return '$' . $item->getName();
-        }, $delegateReflectionClass->getConstructor()->getParameters());
-        $delegateConstructParamsValTypeNames = implode(',', $delegateConstructParamsValTypeNames);
         $extendWord = 'extends';
-        $extendParent = "parent::__construct({$delegateConstructParamsValTypeNames});";
         if ($delegateReflectionClass->isInterface()) {
             $extendWord = 'implements';
         }
 
-        $result = <<<CODE
-return new class({$delegateConstructParamsVal}, \$delegatedSource) {$extendWord} {$delegateClassName} {
-    private ?\\{$this->reflectionClass->getName()} \$myDelegatedSource = null;
-
-    public function __construct({$delegateConstructParamsSign}, ?\\{$this->reflectionClass->getName()} \$delegatedSource = null)
-    {
-        {$extendParent}
-        \$this->myDelegatedSource = \$delegatedSource;
-    }
+        return <<<CODE
+return new class() {$extendWord} {$delegateClassName} {
+    private string \$myDelegatedSource = {$templateClassName}::class;
     
-    public function delegatedSource(): \\{$this->reflectionClass->getName()}
+    public function delegatedSource(): string
     {
         return \$this->myDelegatedSource;
     }
     {$delegateStmts} 
 };
 CODE;
-        dump($result);
-        return $result;
     }
 
     protected function getDelegateClassStmts(): string
