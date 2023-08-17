@@ -43,8 +43,13 @@ class Template {
         {{CONSTRUCT_CODE}}
     }
     
-    public function delegate() {
+    public function getMyDelegate() {
         return $this->myDelegate;
+    }
+    
+    public function setMyDelegate({{DELEGATE_CLASS}} $delegate): self {
+        $this->myDelegate = $delegate;
+        return $this;
     }
     
     public static function getDelegateInstance(self $delegatedSource): {{DELEGATE_CLASS}} {
