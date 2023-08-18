@@ -43,7 +43,7 @@ class Template {
         {{CONSTRUCT_CODE}}
     }
     
-    public function getMyDelegate() {
+    public function getMyDelegate(): {{DELEGATE_CLASS}} {
         return $this->myDelegate;
     }
     
