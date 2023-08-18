@@ -12,4 +12,8 @@ use MaliBoot\Lombok\Contract\ToArrayAnnotationInterface;
 #[Attribute(Attribute::TARGET_CLASS)]
 class ToArray extends AbstractAnnotation implements ToArrayAnnotationInterface
 {
+    public function getterDelegate(): ?string
+    {
+        return null;
+    }
 }

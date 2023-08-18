@@ -2,9 +2,7 @@
 
 namespace MaliBoot\Lombok\Contract;
 
-use Hyperf\Di\Annotation\AnnotationInterface;
-
-interface LoggerAnnotationInterface extends AnnotationInterface
+interface LoggerAnnotationInterface
 {
     public function getLogName(): string;
 

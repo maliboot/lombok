@@ -2,8 +2,7 @@
 
 namespace MaliBoot\Lombok\Contract;
 
-use Hyperf\Di\Annotation\AnnotationInterface;
-
-interface GetterAnnotationInterface extends AnnotationInterface
+interface GetterAnnotationInterface
 {
+    public function getterDelegate(): ?string;
 }

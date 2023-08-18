@@ -11,4 +11,8 @@ use MaliBoot\Lombok\Contract\ToCollectionAnnotationInterface;
 #[Attribute(Attribute::TARGET_CLASS)]
 class ToCollection extends AbstractAnnotation implements ToCollectionAnnotationInterface
 {
+    public function getterDelegate(): ?string
+    {
+        return null;
+    }
 }
