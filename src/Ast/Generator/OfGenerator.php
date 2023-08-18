@@ -32,7 +32,13 @@ class Template {
             if (!isset($this->{$fieldName})) {
                 continue;
             }
-            $this->{$fieldName} = $fieldValue;
+            $setterName = 'set' . ucfirst($fieldName);
+            $setterExist = method_exists($this, $setterName);
+            if ($setterExist) {
+                $this->$setterName($fieldValue);
+            } else {
+                $this->{$fieldName} = $fieldValue;
+            }
             
             if (is_array($fieldValue)) {
                 $fieldReflection = new \ReflectionProperty($this, $fieldName);
@@ -45,7 +51,12 @@ class Template {
                 $fieldTypeArr = explode('|', (string)$fieldType);
                 foreach ($fieldTypeArr as $fieldTypeStr) {
                     if (method_exists($fieldTypeStr, 'ofData')) {
-                        $this->{$fieldName} = (new $fieldTypeStr)->ofData($fieldValue);
+                        $typeValIns = (new $fieldTypeStr)->ofData($fieldValue);
+                        if ($setterExist) {
+                            $this->$setterName($typeValIns);
+                        } else {
+                            $this->{$fieldName} = $typeValIns;
+                        }
                         break;
                     }
                 }
