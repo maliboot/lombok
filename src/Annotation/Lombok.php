@@ -30,7 +30,6 @@ class Lombok extends AbstractAnnotation implements GetterAnnotationInterface, Se
         string $logName = Log::CALL_CLASS_NAME,
         string $logGroup = Log::CALL_LOG_CONFIG
     ) {
-        parent::__construct($getterSetterDelegate, $logName, $logGroup);
     }
 
     public function setterDelegate(): ?string

@@ -16,7 +16,6 @@ class Delegate extends AbstractAnnotation implements DelegateAnnotationInterface
      */
     public function __construct(private string $className)
     {
-        parent::__construct($className);
     }
 
     public function getDelegateClassName(): string

@@ -17,7 +17,6 @@ class GetterSetter extends AbstractAnnotation implements GetterAnnotationInterfa
      */
     public function __construct(public ?string $delegate = null)
     {
-        parent::__construct($delegate);
     }
 
     public function setterDelegate(): ?string

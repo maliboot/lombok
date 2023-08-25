@@ -14,7 +14,6 @@ class Setter extends AbstractAnnotation implements SetterAnnotationInterface
      */
     public function __construct(public ?string $delegate = null)
     {
-        parent::__construct($delegate);
     }
 
     public function setterDelegate(): ?string

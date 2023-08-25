@@ -21,6 +21,5 @@ class Logger extends AbstractAnnotation implements LoggerAnnotationInterface
      */
     public function __construct(string $name = Log::CALL_CLASS_NAME, string $group = Log::CALL_LOG_CONFIG)
     {
-        parent::__construct($name, $group);
     }
 }
