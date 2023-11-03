@@ -58,7 +58,7 @@ CODE;
         foreach ($reflector->getAttributes($this->getAnnotationInterface(), ReflectionAttribute::IS_INSTANCEOF) as $attribute) {
             /** @var GetterAnnotationInterface|ReflectionAttribute $attribute */
             /** @var string $delegate */
-            $delegate = $attribute->newInstance()->setterDelegate();
+            $delegate = $attribute->newInstance()->getterDelegate();
             if (is_subclass_of($delegate, GetterDelegateInterface::class)) {
                 $resultSet[$delegate] = "\$result = \\{$delegate}::get('{$key}', \$result, '{$type}', \$this);";
             }
