@@ -40,7 +40,7 @@ class Template {
 CODE;
         $fieldName = $this->reflectionProperty->getName();
         $default = $this->reflectionProperty->hasDefaultValue() ? ' = ' . $this->getValString($this->reflectionProperty->getDefaultValue()) : '';
-        $type = $this->reflectionProperty->hasType() ? (string) $this->reflectionProperty->getType() : '';
+        $type = $this->getPropertyType($this->reflectionProperty);
         $delegates = [...$this->getSetterDelegateSet($this->reflectionClass, $fieldName, $type), ...$this->getSetterDelegateSet($this->reflectionProperty, $fieldName, $type)];
         return str_replace(
             ['{{METHOD_NAME}}', '{{RETURN_TYPE}}', '{{PROPERTY_NAME}}', '{{PROPERTY_DEFAULT}}', '{{DELEGATE}}'],

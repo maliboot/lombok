@@ -37,7 +37,7 @@ class Template {
 }
 CODE;
         $fieldName = $this->reflectionProperty->getName();
-        $type = $this->reflectionProperty->hasType() ? (string) $this->reflectionProperty->getType() : '';
+        $type = $this->getPropertyType($this->reflectionProperty, true);
         $delegates = [...$this->getGetterDelegateSet($this->reflectionClass, $fieldName, $type), ...$this->getGetterDelegateSet($this->reflectionProperty, $fieldName, $type)];
 
         return str_replace(

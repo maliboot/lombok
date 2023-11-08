@@ -110,6 +110,40 @@ abstract class AbstractVisitor
         }
     }
 
+    protected function getPropertyType(\ReflectionProperty $reflectionProperty, bool $addNull = false): string
+    {
+        $type = $reflectionProperty->hasType() ? (string) $reflectionProperty->getType() : '';
+        $completeType = $this->completeType($type);
+        if (! $addNull) {
+            return $completeType;
+        }
+
+        if ($completeType[0] !== '?' && ! str_contains($completeType, 'null')) {
+            $completeType = str_contains($completeType, '|') ? $completeType . '|null' : '?' . $completeType;
+        }
+        return $completeType;
+    }
+
+    /**
+     * 补全类型.
+     * @param string $type ...
+     * @return string ...
+     */
+    protected function completeType(string $type): string
+    {
+        if ($type === '') {
+            return $type;
+        }
+        return implode('|', array_map(function ($item) {
+            $firstLetterIndex = $item[0] === '?' ? 1 : 0;
+            if ($item[$firstLetterIndex] !== '\\' && ctype_upper($item[$firstLetterIndex])) {
+                return sprintf('%s\\%s', $firstLetterIndex ? '?' : '', ltrim($item, '?'));
+            }
+
+            return $item;
+        }, explode('|', $type)));
+    }
+
     abstract protected function getClassMemberName(): string;
 
     abstract protected function getAnnotationInterface(): string;
