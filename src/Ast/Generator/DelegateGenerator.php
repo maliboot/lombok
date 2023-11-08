@@ -59,7 +59,7 @@ class Template {
     
     public function __call($name, $arguments)
     {
-        if (method_exists($this->myDelegate, $name)) {
+        if (method_exists($this->myDelegate, $name) || method_exists($this->myDelegate, '__call')) {
             return $this->myDelegate->{$name}(...$arguments);
         }
     }
