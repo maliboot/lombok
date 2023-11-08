@@ -31,7 +31,12 @@ class Template {
         $result = [];
         $classReflection = new \ReflectionClass($this);
         foreach ($classReflection->getProperties() as $property) {
-            $methodName = 'get' . ucfirst($property->getName());
+            $propertyName = $property->getName();
+            $filterNames = ['myDelegate'];
+            if (in_array($propertyName, $filterNames)) {
+                continue;
+            }
+            $methodName = 'get' . ucfirst($propertyName);
             if ($property->isInitialized($this) && $classReflection->hasMethod($methodName)) {
                 $result[$property->getName()] = $this->{$methodName}();
             }

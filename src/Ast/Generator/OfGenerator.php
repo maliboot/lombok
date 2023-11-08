@@ -29,7 +29,7 @@ class OfGenerator extends AbstractClassVisitor
 class Template {
     public function ofData(array $fieldData): self {
         foreach ($fieldData as $fieldName => $fieldValue) {
-            if (!isset($this->{$fieldName})) {
+            if (!property_exists($this, $fieldName)) {
                 continue;
             }
             $setterName = 'set' . ucfirst($fieldName);
