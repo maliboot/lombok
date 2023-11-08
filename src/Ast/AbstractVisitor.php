@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace MaliBoot\Lombok\Ast;
 
 use Hyperf\Di\Aop\Ast;
+use PhpParser\Node\Expr\Closure;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassConst;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Property;
+use PhpParser\Node\Stmt\Return_;
 use ReflectionAttribute;
 use ReflectionClass;
+use ReflectionProperty;
 
 abstract class AbstractVisitor
 {
@@ -23,8 +26,7 @@ abstract class AbstractVisitor
     public function __construct(
         protected Class_ $class_,
         protected ReflectionClass $reflectionClass,
-    ) {
-    }
+    ) {}
 
     public function execute(): void
     {
@@ -102,15 +104,41 @@ abstract class AbstractVisitor
 
             // 个别魔术方法允许合并
             if (is_a($tplNode, ClassMethod::class) && isset($allowMagicMethods[$tplNode->name->toString()])) {
-                $this->class_->stmts[$originTplStmts[$tplNodeFlag]['key']]->stmts = [
-                    ...$this->class_->stmts[$originTplStmts[$tplNodeFlag]['key']]->stmts,
-                    ...$tplNode->stmts,
-                ];
+                $this->class_->stmts[$originTplStmts[$tplNodeFlag]['key']] = $this->mergeClassMethodStmts(
+                    $this->class_->stmts[$originTplStmts[$tplNodeFlag]['key']],
+                    $tplNode
+                );
             }
         }
     }
 
-    protected function getPropertyType(\ReflectionProperty $reflectionProperty, bool $addNull = false): string
+    protected function mergeClassMethodStmts(ClassMethod $originClassMethod, ClassMethod $otherClassMethod): ClassMethod
+    {
+        $hasProxyClosure = false;
+        foreach ($originClassMethod->stmts as $methodStmt) {
+            if (! $methodStmt instanceof Return_) {
+                continue;
+            }
+            if ($methodStmt->expr?->name?->name !== '__proxyCall') {
+                continue;
+            }
+            foreach ($methodStmt->expr->args as $arg) {
+                if ($arg->value instanceof Closure) {
+                    $arg->value->stmts = [...$arg->value->stmts, ...$otherClassMethod->stmts];
+                    $hasProxyClosure = true;
+                    break;
+                }
+            }
+        }
+
+        if (! $hasProxyClosure) {
+            $originClassMethod->stmts = [...$originClassMethod->stmts, ...$otherClassMethod->stmts];
+        }
+
+        return $originClassMethod;
+    }
+
+    protected function getPropertyType(ReflectionProperty $reflectionProperty, bool $addNull = false): string
     {
         $type = $reflectionProperty->hasType() ? (string) $reflectionProperty->getType() : '';
         $completeType = $this->completeType($type);
