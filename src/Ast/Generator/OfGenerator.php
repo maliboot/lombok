@@ -32,34 +32,31 @@ class Template {
             if (!property_exists($this, $fieldName)) {
                 continue;
             }
-            $setterName = 'set' . ucfirst($fieldName);
-            $setterExist = method_exists($this, $setterName);
-            if ($setterExist) {
-                $this->$setterName($fieldValue);
-            } else {
-                $this->{$fieldName} = $fieldValue;
+            
+            $fieldReflection = new \ReflectionProperty($this, $fieldName);
+            /** @var \ReflectionType $fieldType */
+            $fieldType = $fieldReflection->getType();
+            $fieldTypes = (string)$fieldType;
+            if ($fieldType !== null && ! $fieldType->allowsNull() && $fieldValue === null) {
+                continue;
             }
             
+            $setterName = 'set' . ucfirst($fieldName);
+            $resultVal = $fieldValue;
             if (is_array($fieldValue)) {
-                $fieldReflection = new \ReflectionProperty($this, $fieldName);
-                /** @var \ReflectionType $fieldType */
-                $fieldType = $fieldReflection->getType();
-                if ($fieldType == null) {
-                    continue;
-                }
-                
-                $fieldTypeArr = explode('|', (string)$fieldType);
+                $fieldTypeArr = explode('|', $fieldTypes);
                 foreach ($fieldTypeArr as $fieldTypeStr) {
-                    if (method_exists($fieldTypeStr, 'ofData')) {
-                        $typeValIns = (new $fieldTypeStr)->ofData($fieldValue);
-                        if ($setterExist) {
-                            $this->$setterName($typeValIns);
-                        } else {
-                            $this->{$fieldName} = $typeValIns;
-                        }
+                    if (class_exists($fieldTypeStr) && method_exists($fieldTypeStr, 'ofData')) {
+                        $resultVal = (new $fieldTypeStr)->ofData($fieldValue);
                         break;
                     }
                 }
+            }
+            
+            if (method_exists($this, $setterName)) {
+                $this->$setterName($resultVal);
+            } else {
+                $this->{$fieldName} = $resultVal;
             }
         }
         return $this;
