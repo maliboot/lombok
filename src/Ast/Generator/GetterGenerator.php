@@ -30,7 +30,7 @@ class GetterGenerator extends AbstractClassFieldVisitor
 <?php
 class Template {
     public function {{METHOD_NAME}}(): {{RETURN_TYPE}} {
-        $result = (new \ReflectionProperty(__CLASS__, '{{PROPERTY_NAME}}'))->isInitialized($this) ? $this->{{PROPERTY_NAME}} : null;
+        $result = $this->{{PROPERTY_NAME}} ?? null;
         {{DELEGATE}}
         return $result;
     }

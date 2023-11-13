@@ -6,6 +6,7 @@ namespace MaliBoot\Lombok\Ast;
 
 use Hyperf\Di\Aop\Ast;
 use PhpParser\Node\Expr\Closure;
+use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassConst;
 use PhpParser\Node\Stmt\ClassMethod;
@@ -110,6 +111,29 @@ abstract class AbstractVisitor
                 );
             }
         }
+
+        // 接口继承
+        $this->rebuildClassImplStmts();
+    }
+
+    protected function rebuildClassImplStmts(): void
+    {
+        $impls = $this->getImpls();
+        if (empty($impls)) {
+            return;
+        }
+
+        $oldImpls = array_reduce($this->class_->implements, fn ($carry, $item) => [...$carry, $item->toString() => 1], []);
+        foreach ($impls as $impl) {
+            $impl[0] !== '\\' && $impl = '\\' . $impl;
+            $implArr = explode('\\', $impl);
+
+            if (isset($oldImpls[$implArr[count($implArr) - 1]])) {
+                continue;
+            }
+
+            $this->class_->implements[] = new Name($impl);
+        }
     }
 
     protected function mergeClassMethodStmts(ClassMethod $originClassMethod, ClassMethod $otherClassMethod): ClassMethod
@@ -177,4 +201,13 @@ abstract class AbstractVisitor
     abstract protected function getAnnotationInterface(): string;
 
     abstract protected function getClassCodeSnippet(): string;
+
+    /**
+     * interface接口列表.
+     * @override ...
+     */
+    protected function getImpls(): array
+    {
+        return [];
+    }
 }
