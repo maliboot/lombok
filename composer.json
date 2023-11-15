@@ -16,7 +16,8 @@
     "hyperf/di": "^3.0",
     "hyperf/logger": "~3.0.0",
     "hyperf/collection": "~3.0.0",
-    "hyperf/stringable": "~3.0.0"
+    "hyperf/stringable": "~3.0.0",
+    "jetbrains/phpstorm-attributes": "dev-master"
   },
   "autoload": {
     "psr-4": {
