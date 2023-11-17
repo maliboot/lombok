@@ -21,7 +21,7 @@
 
 ### 安装
 - PHP包安装（必须）：`composer require maliboot/lombok`
-- PHPStorm插件支持（可选）：`MaliBoot Support`，[下载传送门]()
+- PHPStorm插件支持（可选）：`MaliBoot Support`，[下载传送门](https://github.com/maliboot/idea-hyperf-plugin#readme)
 
 ### 使用
 #### 1.1 `#[Getter]`基本使用，`#[ToArray]`、`#[ToCollection]`同理
