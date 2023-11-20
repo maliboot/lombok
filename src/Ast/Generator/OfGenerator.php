@@ -27,7 +27,7 @@ class OfGenerator extends AbstractClassVisitor
         return <<<'CODE'
 <?php
 class Template {
-    public function ofData(array $fieldData): self {
+    public function ofData(array $fieldData, bool $isStrict = true): self {
         foreach ($fieldData as $fieldName => $fieldValue) {
             if (empty($fieldName)) {
                 continue;
@@ -48,30 +48,53 @@ class Template {
                 continue;
             }
             
-            $setterName = 'set' . ucfirst($fieldName);
-            $resultVal = $fieldValue;
-            if (is_array($fieldValue)) {
-                $fieldTypeArr = explode('|', $fieldTypes);
-                foreach ($fieldTypeArr as $fieldTypeStr) {
-                    if (class_exists($fieldTypeStr) && method_exists($fieldTypeStr, 'ofData')) {
-                        $resultVal = (new $fieldTypeStr)->ofData($fieldValue);
-                        break;
+            try {
+                // try convert
+                if (! $isStrict && $fieldValue !== null) {
+                    if (is_numeric($fieldValue) && str_contains($fieldTypes, 'int')) {
+                        $fieldValue = (int) $fieldValue;
+                    } elseif (str_contains($fieldTypes, 'bool')) {
+                        $fieldValue = (bool) $fieldValue;
+                    } elseif (is_numeric($fieldValue) && str_contains($fieldTypes, 'float')) {
+                        $fieldValue = (float) $fieldValue;
+                    } elseif (str_contains($fieldTypes, 'string')) {
+                        $fieldValue = (string)$fieldValue;
                     }
                 }
-            }
-            
-            if (method_exists($this, $setterName)) {
-                $this->$setterName($resultVal);
-            } else {
-                $this->{$fieldName} = $resultVal;
+                
+                $setterName = 'set' . ucfirst($fieldName);
+                $resultVal = $fieldValue;
+                if (is_array($fieldValue)) {
+                    $fieldTypeArr = explode('|', $fieldTypes);
+                    foreach ($fieldTypeArr as $fieldTypeStr) {
+                        if (class_exists($fieldTypeStr) && method_exists($fieldTypeStr, 'ofData')) {
+                            $resultVal = (new $fieldTypeStr)->ofData($fieldValue);
+                            break;
+                        }
+                    }
+                }
+                
+                if (method_exists($this, $setterName)) {
+                    $this->$setterName($resultVal);
+                } else {
+                    $this->{$fieldName} = $resultVal;
+                }
+            } catch (\Throwable $e) {
+                throw new \MaliBoot\Lombok\Exception\LombokException(sprintf(
+                    'Lombok::of/ofData() 尝试赋值异常。变量类型为：%s::(%s)$%s，而实际赋值为：[%s]', 
+                    self::class, 
+                    $fieldTypes, 
+                    $fieldName, 
+                    var_export($fieldValue, true)
+                ));
             }
         }
         return $this;
     }
     
-    public static function of(array $fieldData): self 
+    public static function of(array $fieldData, bool $isStrict = false): self 
     {
-        return (new static())->ofData($fieldData);
+        return (new static())->ofData($fieldData, $isStrict);
     }
 }
 CODE;
