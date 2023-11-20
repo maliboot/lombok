@@ -29,6 +29,13 @@ class OfGenerator extends AbstractClassVisitor
 class Template {
     public function ofData(array $fieldData): self {
         foreach ($fieldData as $fieldName => $fieldValue) {
+            if (empty($fieldName)) {
+                continue;
+            }
+            if (str_contains($fieldName, '_')) {
+                $fieldSuffix = $fieldName[strlen($fieldName) - 1] === '_' ? '_' : '';
+                $fieldName = lcfirst(array_reduce(explode('_', $fieldName), fn($carry, $item) => $carry .ucfirst($item), '')) . $fieldSuffix;
+            }
             if (!property_exists($this, $fieldName)) {
                 continue;
             }
