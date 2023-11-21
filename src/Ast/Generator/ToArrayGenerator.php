@@ -46,4 +46,9 @@ class Template {
 }
 CODE;
     }
+
+    protected function getImpls(): array
+    {
+        return [\Hyperf\Contract\Arrayable::class];
+    }
 }
