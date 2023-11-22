@@ -29,8 +29,8 @@ class GetterGenerator extends AbstractClassFieldVisitor
         $code = <<<'CODE'
 <?php
 class Template {
-    public function {{METHOD_NAME}}(): {{RETURN_TYPE}} {
-        $result = $this->{{PROPERTY_NAME}} ?? null;
+    public function {{METHOD_NAME}}({{RETURN_TYPE}} $default = null): {{RETURN_TYPE}} {
+        $result = $this->{{PROPERTY_NAME}} ?? $default;
         {{DELEGATE}}
         return $result;
     }
