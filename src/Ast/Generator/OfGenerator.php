@@ -27,37 +27,34 @@ class OfGenerator extends AbstractClassVisitor
         return <<<'CODE'
 <?php
 class Template {
-    public function ofData(array $fieldData, bool $isStrict = true): self {
+    public function ofData(array $fieldData, bool $isStrict = false): self {
+        $reflectionProperties = $this->getMyReflectionProperties();
         foreach ($fieldData as $fieldName => $fieldValue) {
-            if (empty($fieldName)) {
+            if (empty($fieldName) || ! is_string($fieldName)) {
                 continue;
             }
             if (str_contains($fieldName, '_')) {
                 $fieldSuffix = $fieldName[strlen($fieldName) - 1] === '_' ? '_' : '';
                 $fieldName = lcfirst(array_reduce(explode('_', $fieldName), fn($carry, $item) => $carry .ucfirst($item), '')) . $fieldSuffix;
             }
-            if (!property_exists($this, $fieldName)) {
+            if (! isset($reflectionProperties[$fieldName])) {
                 continue;
             }
-            
-            $fieldReflection = new \ReflectionProperty($this, $fieldName);
-            /** @var \ReflectionType $fieldType */
-            $fieldType = $fieldReflection->getType();
-            $fieldTypes = (string)$fieldType;
-            if ($fieldType !== null && ! $fieldType->allowsNull() && $fieldValue === null) {
+            $fieldRef = $reflectionProperties[$fieldName];
+            if (! $fieldRef['allowsNull'] && $fieldValue === null) {
                 continue;
             }
             
             try {
                 // try convert
                 if (! $isStrict && $fieldValue !== null) {
-                    if (is_numeric($fieldValue) && str_contains($fieldTypes, 'int')) {
+                    if (is_numeric($fieldValue) && str_contains($fieldRef['type'], 'int')) {
                         $fieldValue = (int) $fieldValue;
-                    } elseif (str_contains($fieldTypes, 'bool')) {
+                    } elseif (str_contains($fieldRef['type'], 'bool')) {
                         $fieldValue = (bool) $fieldValue;
-                    } elseif (is_numeric($fieldValue) && str_contains($fieldTypes, 'float')) {
+                    } elseif (is_numeric($fieldValue) && str_contains($fieldRef['type'], 'float')) {
                         $fieldValue = (float) $fieldValue;
-                    } elseif (str_contains($fieldTypes, 'string')) {
+                    } elseif (str_contains($fieldRef['type'], 'string')) {
                         $fieldValue = (string)$fieldValue;
                     }
                 }
@@ -65,7 +62,7 @@ class Template {
                 $setterName = 'set' . ucfirst($fieldName);
                 $resultVal = $fieldValue;
                 if (is_array($fieldValue)) {
-                    $fieldTypeArr = explode('|', $fieldTypes);
+                    $fieldTypeArr = explode('|', $fieldRef['type']);
                     foreach ($fieldTypeArr as $fieldTypeStr) {
                         if (class_exists($fieldTypeStr) && method_exists($fieldTypeStr, 'ofData')) {
                             $resultVal = (new $fieldTypeStr)->ofData($fieldValue);
@@ -74,7 +71,7 @@ class Template {
                     }
                 }
                 
-                if (method_exists($this, $setterName)) {
+                if ($fieldRef['hasSetter']) {
                     $this->$setterName($resultVal);
                 } else {
                     $this->{$fieldName} = $resultVal;
@@ -83,7 +80,7 @@ class Template {
                 throw new \MaliBoot\Lombok\Exception\LombokException(sprintf(
                     'Lombok::of/ofData() 尝试赋值异常。变量类型为：%s::(%s)$%s，而实际赋值为：[%s]', 
                     self::class, 
-                    $fieldTypes, 
+                    $fieldRef['type'], 
                     $fieldName, 
                     var_export($fieldValue, true)
                 ));

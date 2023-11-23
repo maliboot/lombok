@@ -73,14 +73,14 @@ class Template {
     
     public function __get($name)
     {
-        if (property_exists($this->myDelegate, $name)) {
+        if (property_exists($this->myDelegate, $name) || method_exists($this->myDelegate, '__get')) {
             return $this->myDelegate->{$name};
         }
     }
     
     public function __set($name, $value)
     {
-        if (property_exists($this->myDelegate, $name)) {
+        if (property_exists($this->myDelegate, $name) || method_exists($this->myDelegate, '__set')) {
             $this->myDelegate->{$name} = $value;
         }
     }

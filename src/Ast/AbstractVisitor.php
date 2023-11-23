@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace MaliBoot\Lombok\Ast;
 
 use Hyperf\Di\Aop\Ast;
+use MaliBoot\Lombok\Contract\GetterAnnotationInterface;
+use MaliBoot\Lombok\Contract\SetterAnnotationInterface;
 use PhpParser\Node\Expr\Closure;
 use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Class_;
@@ -194,6 +196,46 @@ abstract class AbstractVisitor
 
             return $item;
         }, explode('|', $type)));
+    }
+
+    protected function hasSetterMethod(ReflectionProperty $reflectionProperty): bool
+    {
+        if (call_user_func([$this->reflectionClass, 'hasMethod'], 'set' . ucfirst($reflectionProperty->getName()))) {
+            return true;
+        }
+
+        // 类注解
+        if (! empty($this->reflectionClass->getAttributes(SetterAnnotationInterface::class, ReflectionAttribute::IS_INSTANCEOF))) {
+            return true;
+        }
+
+        // 类属性注解
+        $attributes = $reflectionProperty->getAttributes(SetterAnnotationInterface::class, ReflectionAttribute::IS_INSTANCEOF);
+        if (! empty($attributes)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    protected function hasGetterMethod(ReflectionProperty $reflectionProperty): bool
+    {
+        if (call_user_func([$this->reflectionClass, 'hasMethod'], 'get' . ucfirst($reflectionProperty->getName()))) {
+            return true;
+        }
+
+        // 类注解
+        if (! empty($this->reflectionClass->getAttributes(GetterAnnotationInterface::class, ReflectionAttribute::IS_INSTANCEOF))) {
+            return true;
+        }
+
+        // 类属性注解
+        $attributes = $reflectionProperty->getAttributes(GetterAnnotationInterface::class, ReflectionAttribute::IS_INSTANCEOF);
+        if (! empty($attributes)) {
+            return true;
+        }
+
+        return false;
     }
 
     abstract protected function getClassMemberName(): string;
