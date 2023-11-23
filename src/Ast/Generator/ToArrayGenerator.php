@@ -40,7 +40,7 @@ class Template {
             if ($property->isInitialized($this) && $classReflection->hasMethod($methodName)) {
                 $result[$propertyName] = $this->{$methodName}();
                 if ($result[$propertyName] instanceof \Hyperf\Contract\Arrayable || $result[$propertyName] instanceof \MaliBoot\Utils\Contract\Arrayable) {
-                    $isRecursion && $result[$propertyName] = $this->toArray($result[$propertyName])
+                    $isRecursion && $result[$propertyName] = $this->toArray($result[$propertyName]);
                 }
             }
         }
