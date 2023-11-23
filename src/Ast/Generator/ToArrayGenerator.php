@@ -26,22 +26,35 @@ class ToArrayGenerator extends AbstractClassVisitor
         return <<<'CODE'
 <?php
 class Template {
-    public function toArray(): array 
+    private function _toArray(bool $isRecursion = true): array 
     {
         $result = [];
         $classReflection = new \ReflectionClass($this);
         foreach ($classReflection->getProperties() as $property) {
             $propertyName = $property->getName();
-            $filterNames = ['myDelegate'];
+            $filterNames = ['myDelegate', 'logger'];
             if (in_array($propertyName, $filterNames)) {
                 continue;
             }
             $methodName = 'get' . ucfirst($propertyName);
             if ($property->isInitialized($this) && $classReflection->hasMethod($methodName)) {
-                $result[$property->getName()] = $this->{$methodName}();
+                $result[$propertyName] = $this->{$methodName}();
+                if ($result[$propertyName] instanceof \Hyperf\Contract\Arrayable || $result[$propertyName] instanceof \MaliBoot\Utils\Contract\Arrayable) {
+                    $isRecursion && $result[$propertyName] = $this->toArray($result[$propertyName])
+                }
             }
         }
         return $result;
+    }
+
+    public function all(): array 
+    {
+        return $this->_toArray(false);
+    }
+
+    public function toArray(): array 
+    {
+        return $this->_toArray();
     }
 }
 CODE;

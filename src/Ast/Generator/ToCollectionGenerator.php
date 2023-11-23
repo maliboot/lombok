@@ -28,7 +28,7 @@ class ToCollectionGenerator extends AbstractClassVisitor
 class Template {
     public function toCollection(): \Hyperf\Collection\Collection 
     {
-        return \Hyperf\Collection\Collection::make($this->toArray());
+        return \Hyperf\Collection\Collection::make($this->all());
     }
 }
 CODE;
