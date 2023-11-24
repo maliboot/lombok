@@ -2,6 +2,6 @@
 
 namespace MaliBoot\Lombok\Contract;
 
-interface OfAnnotationInterface extends FieldReflectionAnnotationInterface
+interface OfAnnotationInterface extends ClassReflectionAnnotationInterface
 {
 }

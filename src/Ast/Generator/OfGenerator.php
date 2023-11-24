@@ -27,9 +27,13 @@ class OfGenerator extends AbstractClassVisitor
         return <<<'CODE'
 <?php
 class Template {
-    public function ofData(array $fieldData, bool $isStrict = false): self {
-        $reflectionProperties = $this->getMyReflectionProperties();
+    private function _ofData(array $fieldData, bool $isStrict = false): self {
+        $reflectionProperties = self::getMyReflectionClass()['reflectionProperties'] ?? [];
+        $mapFields = array_reduce($reflectionProperties, fn ($carry, $item) => $item['ofMapName'] ? [...$carry, $item['ofMapName'] => $item['name']] : $carry, []);
         foreach ($fieldData as $fieldName => $fieldValue) {
+            if (isset($mapFields[$fieldName])) {
+                $fieldName = $mapFields[$fieldName];
+            }
             if (empty($fieldName) || ! is_string($fieldName)) {
                 continue;
             }
@@ -89,9 +93,13 @@ class Template {
         return $this;
     }
     
+    public function ofData(array $fieldData, bool $isStrict = false): self {
+        $this->_ofData($fieldData, $isStrict);
+    }
+    
     public static function of(array $fieldData, bool $isStrict = false): self 
     {
-        return (new static())->ofData($fieldData, $isStrict);
+        return (new static())->_ofData($fieldData, $isStrict);
     }
 }
 CODE;

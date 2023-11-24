@@ -29,7 +29,8 @@ class Template {
     private function _toArray(bool $isRecursion = true): array 
     {
         $result = [];
-        foreach ($this->getMyReflectionProperties() as $propertyName => $propertyData) {
+        $reflectionProperties = self::getMyReflectionClass()['reflectionProperties'] ?? [];
+        foreach ($reflectionProperties as $propertyName => $propertyData) {
             $filterNames = ['myDelegate', 'logger'];
             if (in_array($propertyName, $filterNames)) {
                 continue;
@@ -40,6 +41,11 @@ class Template {
                 if ($isRecursion && ($result[$propertyName] instanceof \Hyperf\Contract\Arrayable || $result[$propertyName] instanceof \MaliBoot\Utils\Contract\Arrayable)) {
                     $result[$propertyName] = $result[$propertyName]->toArray();
                 }
+            }
+            
+            if (isset($propertyData['toArrayMapName'])) {
+                $result[$propertyData['toArrayMapName']] = $result[$propertyName];
+                unset($result[$propertyName]);
             }
         }
         return $result;

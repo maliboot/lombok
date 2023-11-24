@@ -71,7 +71,7 @@ CODE;
             [
                 $this->getClassMemberName(),
                 $type,
-                $firstType ? "($firstType)" : '',
+                $firstType ? "({$firstType})" : '',
                 $fieldName,
                 $default,
                 implode("\n", $delegates),
