@@ -43,7 +43,7 @@ class Template {
                 }
             }
             
-            if (isset($propertyData['toArrayMapName'])) {
+            if (isset($propertyData['toArrayMapName']) && isset($result[$propertyName])) {
                 $result[$propertyData['toArrayMapName']] = $result[$propertyName];
                 unset($result[$propertyName]);
             }
