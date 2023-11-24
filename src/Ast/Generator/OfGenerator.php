@@ -94,7 +94,7 @@ class Template {
     }
     
     public function ofData(array $fieldData, bool $isStrict = false): self {
-        $this->_ofData($fieldData, $isStrict);
+        return $this->_ofData($fieldData, $isStrict);
     }
     
     public static function of(array $fieldData, bool $isStrict = false): self 
