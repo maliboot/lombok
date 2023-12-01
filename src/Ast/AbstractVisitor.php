@@ -17,6 +17,7 @@ use PhpParser\Node\Stmt\Return_;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionProperty;
+use function Hyperf\Stringable\str;
 
 abstract class AbstractVisitor
 {
@@ -176,6 +177,31 @@ abstract class AbstractVisitor
             $completeType = str_contains($completeType, '|') ? $completeType . '|null' : '?' . $completeType;
         }
         return $completeType;
+    }
+
+    protected function getTypeFirstPClass(string $type): ?string
+    {
+        foreach (explode('|', $type) as $item) {
+            if (str_contains($item, '\\')) {
+                return trim($item, '?');
+            }
+        }
+
+        return null;
+    }
+
+    protected function removeNullType(string $type): string
+    {
+        if (str_contains($type, '?')) {
+            return str_replace('?', '', $type);
+        }
+        if (str_contains($type, 'null')) {
+            $newType = str_replace('null', '', $type);
+            $newType = str_replace('||', '', $newType);
+            return trim($newType, '|');
+        }
+
+        return $type;
     }
 
     /**

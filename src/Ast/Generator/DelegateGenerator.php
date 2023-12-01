@@ -143,13 +143,14 @@ CODE;
         $templateClassName = "\\{$this->reflectionClass->getName()}";
         $delegateClassName = $this->getFormatDelegateClassName();
         $delegateStmts = $this->getDelegateClassStmts();
+        $delegateInsStmts = $this->getDelegateInsStmts();
         $extendWord = 'extends';
         if ($delegateReflectionClass->isInterface()) {
             $extendWord = 'implements';
         }
 
         return <<<CODE
-return new class() {$extendWord} {$delegateClassName} {
+\$delegateIns = new class() {$extendWord} {$delegateClassName} {
     private string \$myDelegatedSource = {$templateClassName}::class;
     
     public function delegatedSource(): string
@@ -158,10 +159,17 @@ return new class() {$extendWord} {$delegateClassName} {
     }
     {$delegateStmts} 
 };
+{$delegateInsStmts}
+return \$delegateIns;
 CODE;
     }
 
     protected function getDelegateClassStmts(): string
+    {
+        return '';
+    }
+
+    protected function getDelegateInsStmts(): string
     {
         return '';
     }
