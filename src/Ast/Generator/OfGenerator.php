@@ -50,28 +50,37 @@ class Template {
             }
             
             $typeConvert = function (string $type, $val) {
-                if (str_contains($type, '\\')) {
-                    $typeClazz = array_filter(explode('|', $type), fn () => str_contains($type, '\\'));
-                    $typeClazz = ltrim($typeClazz[0], '?');
-                    if (class_exists($typeClazz)) {
-                        if (method_exists($typeClazz, 'ofData')) {
-                            return (new $typeClazz())->ofData(is_array($val) ? $val : (array) $val);
+                try {
+                    if (str_contains($type, '\\')) {
+                        $typeClazz = array_filter(explode('|', $type), fn () => str_contains($type, '\\'));
+                        $typeClazz = ltrim($typeClazz[0], '?');
+                        if (class_exists($typeClazz)) {
+                            if (method_exists($typeClazz, 'ofData')) {
+                                return (new $typeClazz())->ofData(is_array($val) ? $val : (array) $val);
+                            }
+                            return new $typeClazz($val);
                         }
-                        return new $typeClazz($val);
                     }
-                }
-            
-                if (str_contains($type, 'int')) {
-                    return (int) $val;
-                }
-                if (str_contains($type, 'bool')) {
-                    return (bool) $val;
-                }
-                if (str_contains($type, 'float')) {
-                    return (float) $val;
-                }
-                if (str_contains($type, 'string')) {
-                    return (string) $val;
+                
+                    if (str_contains($type, 'int')) {
+                        return (int) $val;
+                    }
+                    if (str_contains($type, 'bool')) {
+                        return (bool) $val;
+                    }
+                    if (str_contains($type, 'float')) {
+                        return (float) $val;
+                    }
+                    if (str_contains($type, 'string')) {
+                        return (string) $val;
+                    }
+                } catch (\Throwable $e) {
+                    throw new \MaliBoot\Lombok\Exception\LombokException(sprintf(
+                        '%s，%s强转%s失败', 
+                        $e->getMessage(),
+                        str_replace("\n", '', var_export($val, true)),
+                        $type, 
+                    ));
                 }
             
                 return $val;
@@ -100,10 +109,16 @@ class Template {
                     $this->{$fieldName} = $resultVal;
                 }
             } catch (\Throwable $e) {
+                $arrayHint = [];
+                $fieldRef['arrayKey'] && $arrayHint[] = $fieldRef['arrayKey'];
+                $fieldRef['arrayValue'] && $arrayHint[] = $fieldRef['arrayValue'];
+                $arrayHint = empty($arrayHint) ? '' : '<' . implode(',', $arrayHint) . '>';
                 throw new \MaliBoot\Lombok\Exception\LombokException(sprintf(
-                    'Lombok::of/ofData() 尝试赋值异常。变量类型为：%s::(%s)$%s，而实际赋值为：[%s]', 
+                    'Lombok::of/ofData() 尝试赋值异常[%s]。变量类型为：%s::(%s%s)$%s，而实际赋值为：[%s]', 
+                    $e->getMessage(),
                     self::class, 
-                    $fieldRef['type'], 
+                    $fieldRef['type'],
+                    $arrayHint,
                     $fieldName, 
                     var_export($fieldValue, true)
                 ));
