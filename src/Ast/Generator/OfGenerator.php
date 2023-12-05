@@ -49,32 +49,51 @@ class Template {
                 continue;
             }
             
+            $typeConvert = function (string $type, $val) {
+                if (str_contains($type, '\\')) {
+                    $typeClazz = array_filter(explode('|', $type), fn () => str_contains($type, '\\'));
+                    $typeClazz = ltrim($typeClazz[0], '?');
+                    if (class_exists($typeClazz)) {
+                        if (method_exists($typeClazz, 'ofData')) {
+                            return (new $typeClazz())->ofData(is_array($val) ? $val : (array) $val);
+                        }
+                        return new $typeClazz($val);
+                    }
+                }
+            
+                if (str_contains($type, 'int')) {
+                    return (int) $val;
+                }
+                if (str_contains($type, 'bool')) {
+                    return (bool) $val;
+                }
+                if (str_contains($type, 'float')) {
+                    return (float) $val;
+                }
+                if (str_contains($type, 'string')) {
+                    return (string) $val;
+                }
+            
+                return $val;
+            };
+            
             try {
+                $resultVal = $fieldValue;
                 // try convert
                 if (! $isStrict && $fieldValue !== null) {
-                    if (is_numeric($fieldValue) && str_contains($fieldRef['type'], 'int')) {
-                        $fieldValue = (int) $fieldValue;
-                    } elseif (str_contains($fieldRef['type'], 'bool')) {
-                        $fieldValue = (bool) $fieldValue;
-                    } elseif (is_numeric($fieldValue) && str_contains($fieldRef['type'], 'float')) {
-                        $fieldValue = (float) $fieldValue;
-                    } elseif (str_contains($fieldRef['type'], 'string')) {
-                        $fieldValue = (string)$fieldValue;
+                    $resultVal = $typeConvert($fieldRef['type'], $fieldValue);
+                }
+                if (str_contains($fieldRef['type'], 'array') && ($fieldRef['arrayKey'] || $fieldRef['arrayValue'])) {
+                    $newFieldValue = [];
+                    foreach ($fieldValue as $key => $val) {
+                        $newKey = $fieldRef['arrayKey'] ? $typeConvert($fieldRef['arrayKey'], $key) : $key;
+                        $newVal = $fieldRef['arrayValue'] ? $typeConvert($fieldRef['arrayValue'], $val) : $val;
+                        $newFieldValue[$newKey] = $newVal;
                     }
+                    $resultVal = $newFieldValue;
                 }
                 
                 $setterName = 'set' . ucfirst($fieldName);
-                $resultVal = $fieldValue;
-                if (is_array($fieldValue)) {
-                    $fieldTypeArr = explode('|', $fieldRef['type']);
-                    foreach ($fieldTypeArr as $fieldTypeStr) {
-                        if (class_exists($fieldTypeStr) && method_exists($fieldTypeStr, 'ofData')) {
-                            $resultVal = (new $fieldTypeStr)->ofData($fieldValue);
-                            break;
-                        }
-                    }
-                }
-                
                 if ($fieldRef['hasSetter']) {
                     $this->$setterName($resultVal);
                 } else {

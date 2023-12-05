@@ -9,8 +9,8 @@ use MaliBoot\Lombok\Ast\AbstractClassVisitor;
 use MaliBoot\Lombok\Contract\ClassReflectionAnnotationInterface;
 use MaliBoot\Lombok\Contract\OfAnnotationInterface;
 use MaliBoot\Lombok\Contract\ToArrayAnnotationInterface;
-use Reflector;
 use ReflectionAttribute;
+use Reflector;
 
 #[LombokGenerator]
 class ClassReflectionGenerator extends AbstractClassVisitor
@@ -25,21 +25,30 @@ class ClassReflectionGenerator extends AbstractClassVisitor
         return ClassReflectionAnnotationInterface::class;
     }
 
-    protected function getMapName(Reflector $reflector, string $interfaceFQN): ?string
+    protected function getAttributeArgVal(Reflector $reflector, string $interfaceFQN, string $name): ?string
+    {
+        return $this->getAttributeArgs($reflector, $interfaceFQN, [$name])[$name];
+    }
+
+    protected function getAttributeArgs(Reflector $reflector, string $interfaceFQN, array $names): array
     {
         $refs = $reflector->getAttributes($interfaceFQN, ReflectionAttribute::IS_INSTANCEOF);
         if (empty($refs)) {
-            return null;
+            return array_reduce($names, fn ($carry, $item) => [$item => null, ...$carry], []);
         }
 
-        $args = $refs[0]->getArguments();
-        if (isset($args[0])) {
-            return $args[0];
+        $args = (array) $refs[0]->newInstance();
+
+        $result = [];
+        foreach ($names as $name) {
+            if (isset($args[$name])) {
+                $result[$name] = $args[$name];
+            } else {
+                $result[$name] = null;
+            }
         }
-        if (isset($args['name'])) {
-            return $args['name'];
-        }
-        return null;
+
+        return $result;
     }
 
     protected function getClassCodeSnippet(): string
@@ -52,6 +61,11 @@ class ClassReflectionGenerator extends AbstractClassVisitor
                 $carry['\\' . $item->getName()] = $item->getArguments();
                 return $carry;
             }, []);
+            $arrayHints = $this->getAttributeArgs($property, OfAnnotationInterface::class, ['arrayKey', 'arrayValue']);
+            if ($arrayHints['arrayValue']) {
+                ctype_upper($arrayHints['arrayValue'][0]) && $arrayHints['arrayValue'] = '\\' . $arrayHints['arrayValue'];
+            }
+
             $reflectionPropertyCodeList[$fieldName] = [
                 'name' => $fieldName,
                 'type' => $this->getPropertyType($property),
@@ -59,8 +73,10 @@ class ClassReflectionGenerator extends AbstractClassVisitor
                 'hasSetter' => $this->hasSetterMethod($property),
                 'hasGetter' => $this->hasGetterMethod($property),
                 'attributes' => $fieldAttrs,
-                'ofMapName' => $this->getMapName($property, OfAnnotationInterface::class) ?? null,
-                'toArrayMapName' => $this->getMapName($property, ToArrayAnnotationInterface::class) ?? null,
+                'ofMapName' => $this->getAttributeArgVal($property, OfAnnotationInterface::class, 'name') ?? null,
+                'toArrayMapName' => $this->getAttributeArgVal($property, ToArrayAnnotationInterface::class, 'name') ?? null,
+                'arrayKey' => $arrayHints['arrayKey'],
+                'arrayValue' => $arrayHints['arrayValue'],
             ];
         }
         $reflection['reflectionProperties'] = $reflectionPropertyCodeList;
