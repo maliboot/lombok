@@ -9,6 +9,7 @@ use MaliBoot\Lombok\Ast\AbstractClassFieldVisitor;
 use MaliBoot\Lombok\Contract\SetterAnnotationInterface;
 use MaliBoot\Lombok\Contract\SetterDelegateInterface;
 use MaliBoot\Lombok\Contract\WeakSetterInterface;
+use MaliBoot\Utils\ObjectUtil;
 use ReflectionAttribute;
 use Reflector;
 
@@ -55,7 +56,7 @@ class Template {
     public function {{METHOD_NAME}}(${{PROPERTY_NAME}}{{PROPERTY_DEFAULT}}): self {
         $result = ${{PROPERTY_NAME}};
         {{DELEGATE}}
-        $this->{{PROPERTY_NAME}} = {{TYPE_CONVERTOR}}$result;
+        {{TYPE_CONVERTOR}}
         return $this;
     }
 }
@@ -66,12 +67,26 @@ CODE;
         $typeArr = explode('|', $type);
         $firstType = isset($typeArr[0]) ? ltrim($typeArr[0], '?') : null;
         $delegates = [...$this->getSetterDelegateSet($this->reflectionClass, $fieldName, $type), ...$this->getSetterDelegateSet($this->reflectionProperty, $fieldName, $type)];
+
+        if (class_exists($firstType)) {
+            if (ObjectUtil::isOf($firstType) || method_exists($firstType, 'of')) {
+                $typeConvertorCode = "\$this->{$fieldName} = {$firstType}::of(\$result);";
+            } else {
+                $typeConvertorCode = "\$this->{$fieldName} = new {$firstType}(\$result);";
+            }
+            $typeConvertorCode = "if (\$result instanceof {$firstType}) {\$this->{$fieldName} = \$result;} else {{$typeConvertorCode}}";
+        } elseif (in_array($firstType, ['int', 'float', 'bool', 'string'])) {
+            $typeConvertorCode = "\$this->{$fieldName} = ({$firstType})\$result;";
+        } else {
+            $typeConvertorCode = "\$this->{$fieldName} = \$result;";
+        }
+
         return str_replace(
             ['{{METHOD_NAME}}', '{{RETURN_TYPE}}', '{{TYPE_CONVERTOR}}', '{{PROPERTY_NAME}}', '{{PROPERTY_DEFAULT}}', '{{DELEGATE}}'],
             [
                 $this->getClassMemberName(),
                 $type,
-                $firstType ? "({$firstType})" : '',
+                $typeConvertorCode,
                 $fieldName,
                 $default,
                 implode("\n", $delegates),
