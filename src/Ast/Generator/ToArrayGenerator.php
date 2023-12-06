@@ -42,7 +42,7 @@ class Template {
                     $result[$propertyName] = $result[$propertyName]->toArray();
                 }
             }
-            if ($isRecursion && is_array($result[$propertyName]) && !empty($result[$propertyName])) {
+            if ($isRecursion && isset($result[$propertyName]) && is_array($result[$propertyName])) {
                 $result[$propertyName] = array_map(function ($item) {
                     if ($item instanceof \Hyperf\Contract\Arrayable || $item instanceof \MaliBoot\Utils\Contract\Arrayable) {
                         return $item->toArray();
