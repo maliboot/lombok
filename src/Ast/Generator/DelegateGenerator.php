@@ -34,7 +34,6 @@ class DelegateGenerator extends AbstractClassVisitor
         $code = <<<'CODE'
 <?php
 class Template {
-    {{TEMPLATE_CLASS_STMTS}}
     private {{DELEGATE_CLASS}} $myDelegate;
     {{CONST}}
     
@@ -84,6 +83,14 @@ class Template {
             $this->myDelegate->{$name} = $value;
         }
     }
+    
+    public function __isset($name)
+    {
+        if (! isset($this->{$name})) {
+            return isset($this->myDelegate->{$name});
+        }
+    }
+    {{TEMPLATE_CLASS_STMTS}}
 }
 CODE;
         $delegateClassName = $this->getFormatDelegateClassName();
