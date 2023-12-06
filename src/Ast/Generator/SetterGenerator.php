@@ -75,8 +75,10 @@ CODE;
                 $typeConvertorCode = "\$this->{$fieldName} = new {$firstType}(\$result);";
             }
             $typeConvertorCode = "if (\$result instanceof {$firstType}) {\$this->{$fieldName} = \$result;} else {{$typeConvertorCode}}";
-        } elseif (in_array($firstType, ['int', 'float', 'bool', 'string', 'array'])) {
+        } elseif (in_array($firstType, ['int', 'float', 'bool', 'string'])) {
             $typeConvertorCode = "\$this->{$fieldName} = ({$firstType})\$result;";
+        } elseif ($firstType === 'array') {
+            $typeConvertorCode = "\$this->{$fieldName} = \$result instanceof \Hyperf\Contract\Arrayable ? \$result->toArray() : (array)\$result;";
         } else {
             $typeConvertorCode = "\$this->{$fieldName} = \$result;";
         }

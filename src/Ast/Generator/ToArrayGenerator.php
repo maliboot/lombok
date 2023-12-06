@@ -38,13 +38,13 @@ class Template {
             $methodName = 'get' . ucfirst($propertyName);
             if (isset($this->{$propertyName}) && $propertyData['hasGetter']) {
                 $result[$propertyName] = $this->{$methodName}();
-                if ($isRecursion && ($result[$propertyName] instanceof \Hyperf\Contract\Arrayable || $result[$propertyName] instanceof \MaliBoot\Utils\Contract\Arrayable)) {
+                if ($isRecursion && $result[$propertyName] instanceof \Hyperf\Contract\Arrayable) {
                     $result[$propertyName] = $result[$propertyName]->toArray();
                 }
             }
             if ($isRecursion && isset($result[$propertyName]) && is_array($result[$propertyName])) {
                 $result[$propertyName] = array_map(function ($item) {
-                    if ($item instanceof \Hyperf\Contract\Arrayable || $item instanceof \MaliBoot\Utils\Contract\Arrayable) {
+                    if ($item instanceof \Hyperf\Contract\Arrayable) {
                         return $item->toArray();
                     }
                     return $item;
