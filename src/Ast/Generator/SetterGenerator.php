@@ -75,7 +75,7 @@ CODE;
                 $typeConvertorCode = "\$this->{$fieldName} = new {$firstType}(\$result);";
             }
             $typeConvertorCode = "if (\$result instanceof {$firstType}) {\$this->{$fieldName} = \$result;} else {{$typeConvertorCode}}";
-        } elseif (in_array($firstType, ['int', 'float', 'bool', 'string'])) {
+        } elseif (in_array($firstType, ['int', 'float', 'bool', 'string', 'array'])) {
             $typeConvertorCode = "\$this->{$fieldName} = ({$firstType})\$result;";
         } else {
             $typeConvertorCode = "\$this->{$fieldName} = \$result;";
