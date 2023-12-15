@@ -69,7 +69,6 @@ class LombokVisitor extends NodeVisitorAbstract
     {
         $classReflection = new ReflectionClass($this->visitorMetadata->className);
         $generatorAnnotationList = AnnotationCollector::getClassesByAnnotation(LombokGenerator::class);
-
         foreach ($generatorAnnotationList as $generatorClassName => $generatorAnnotation) {
             if (! is_subclass_of($generatorClassName, AbstractVisitor::class)) {
                 continue;

@@ -30,13 +30,13 @@ class Template {
     {
         $result = [];
         $reflectionProperties = self::getMyReflectionClass()['reflectionProperties'] ?? [];
+        $filterNames = ['myDelegate', 'logger'];
         foreach ($reflectionProperties as $propertyName => $propertyData) {
-            $filterNames = ['myDelegate', 'logger'];
             if (in_array($propertyName, $filterNames)) {
                 continue;
             }
             $methodName = 'get' . ucfirst($propertyName);
-            if (isset($this->{$propertyName}) && $propertyData['hasGetter']) {
+            if ($propertyData['hasGetter']) {
                 $result[$propertyName] = $this->{$methodName}();
                 if ($isRecursion && $result[$propertyName] instanceof \Hyperf\Contract\Arrayable) {
                     $result[$propertyName] = $result[$propertyName]->toArray();
@@ -50,9 +50,15 @@ class Template {
                     return $item;
                 }, $result[$propertyName]);
             }
-            
-            if (isset($propertyData['toArrayMapName']) && isset($result[$propertyName])) {
-                $result[$propertyData['toArrayMapName']] = $result[$propertyName];
+            if (isset($propertyData['toArrayMapName'])) {
+                if (isset($result[$propertyName])) {
+                    $result[$propertyData['toArrayMapName']] = $result[$propertyName];
+                } elseif(isset($this->{$propertyData['toArrayMapName']}) ||! empty($this->{$propertyData['toArrayMapName']})) {
+                    $result[$propertyData['toArrayMapName']] = $this->{$propertyData['toArrayMapName']};
+                    $result[$propertyName] = $this->{$propertyData['toArrayMapName']};
+                }
+                
+                isset($result[$propertyName]) || $result[$propertyName] = null;
             }
         }
         return $result;

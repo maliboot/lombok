@@ -17,7 +17,7 @@ use PhpParser\Node\Stmt\Return_;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionProperty;
-use function Hyperf\Stringable\str;
+use Reflector;
 
 abstract class AbstractVisitor
 {
@@ -262,6 +262,32 @@ abstract class AbstractVisitor
         }
 
         return false;
+    }
+
+    protected function getAttributeFnVal(Reflector $reflector, string $interfaceFQN, string $fnName): ?string
+    {
+        return $this->getAttributeFnValues($reflector, $interfaceFQN, [$fnName])[$fnName];
+    }
+
+    protected function getAttributeFnValues(Reflector $reflector, string $interfaceFQN, array $fnNames): array
+    {
+        $refs = $reflector->getAttributes($interfaceFQN, ReflectionAttribute::IS_INSTANCEOF);
+        if (empty($refs)) {
+            return array_reduce($fnNames, fn ($carry, $item) => [$item => null, ...$carry], []);
+        }
+
+        $refIns = $refs[0]->newInstance();
+
+        $result = [];
+        foreach ($fnNames as $fnName) {
+            if (method_exists($refIns, $fnName)) {
+                $result[$fnName] = $refIns->{$fnName}();
+            } else {
+                $result[$fnName] = null;
+            }
+        }
+
+        return $result;
     }
 
     abstract protected function getClassMemberName(): string;
