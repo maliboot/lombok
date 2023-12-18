@@ -36,7 +36,7 @@ class Template {
                 continue;
             }
             $methodName = 'get' . ucfirst($propertyName);
-            if ($propertyData['hasGetter']) {
+            if (isset($this->{$propertyName}) && $propertyData['hasGetter']) {
                 $result[$propertyName] = $this->{$methodName}();
                 if ($isRecursion && $result[$propertyName] instanceof \Hyperf\Contract\Arrayable) {
                     $result[$propertyName] = $result[$propertyName]->toArray();
