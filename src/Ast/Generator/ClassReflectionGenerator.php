@@ -67,6 +67,10 @@ class ClassReflectionGenerator extends AbstractClassVisitor
                 ctype_upper($arrayHints['arrayValueType'][0]) && $arrayHints['arrayValueType'] = '\\' . $arrayHints['arrayValueType'];
             }
 
+            $ofMapName = $this->getAttributeFnVal($property, FieldNameOfAnnotationInterface::class, 'getOfFieldName') ?? null;
+            $ofMapName === $fieldName && $ofMapName = null;
+            $toArrayMapName = $this->getAttributeFnVal($property, FieldNameToArrayAnnotationInterface::class, 'getToArrayFieldName') ?? null;
+            $toArrayMapName === $fieldName && $toArrayMapName = null;
             $reflectionPropertyCodeList[$fieldName] = [
                 'name' => $fieldName,
                 'type' => $this->getPropertyType($property),
@@ -74,8 +78,8 @@ class ClassReflectionGenerator extends AbstractClassVisitor
                 'hasSetter' => $this->hasSetterMethod($property),
                 'hasGetter' => $this->hasGetterMethod($property),
                 'attributes' => $fieldAttrs,
-                'ofMapName' => $this->getAttributeFnVal($property, FieldNameOfAnnotationInterface::class, 'getOfFieldName') ?? null,
-                'toArrayMapName' => $this->getAttributeFnVal($property, FieldNameToArrayAnnotationInterface::class, 'getToArrayFieldName') ?? null,
+                'ofMapName' => $ofMapName,
+                'toArrayMapName' => $toArrayMapName,
                 'arrayKey' => $arrayHints['arrayKeyType'],
                 'arrayValue' => $arrayHints['arrayValueType'],
             ];

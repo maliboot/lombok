@@ -57,8 +57,6 @@ class Template {
                     $result[$propertyData['toArrayMapName']] = $this->{$propertyData['toArrayMapName']};
                     $result[$propertyName] = $this->{$propertyData['toArrayMapName']};
                 }
-                
-                isset($result[$propertyName]) || $result[$propertyName] = null;
             }
         }
         return $result;
