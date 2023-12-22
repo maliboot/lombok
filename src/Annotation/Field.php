@@ -27,9 +27,4 @@ class Field implements FieldAnnotationInterface
     {
         return $this->name;
     }
-
-    public function getToArrayFieldName(): ?string
-    {
-        return $this->name;
-    }
 }

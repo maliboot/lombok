@@ -4,4 +4,4 @@ declare(strict_types=1);
 
 namespace MaliBoot\Lombok\Contract;
 
-interface FieldAnnotationInterface extends FieldNameAnnotationInterface {}
+interface FieldAnnotationInterface extends FieldNameOfAnnotationInterface {}
