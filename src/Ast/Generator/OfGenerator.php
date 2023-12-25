@@ -41,7 +41,17 @@ class Template {
                 $fieldSuffix = $fieldName[strlen($fieldName) - 1] === '_' ? '_' : '';
                 $fieldName = lcfirst(array_reduce(explode('_', $fieldName), fn($carry, $item) => $carry .ucfirst($item), '')) . $fieldSuffix;
             }
-            if (! isset($reflectionProperties[$fieldName])) {
+            
+            $setterName = 'set' . ucfirst($fieldName);
+            if (!isset($reflectionProperties[$fieldName])) {
+                if (!property_exists($this, $fieldName)) {
+                    continue;
+                }
+                if (method_exists($this, $setterName)) {
+                    $this->{$setterName}($fieldValue);
+                } else {
+                    $this->{$setterName} = $fieldValue;
+                }
                 continue;
             }
             $fieldRef = $reflectionProperties[$fieldName];
@@ -102,7 +112,6 @@ class Template {
                     $resultVal = $newFieldValue;
                 }
                 
-                $setterName = 'set' . ucfirst($fieldName);
                 if ($fieldRef['hasSetter']) {
                     $this->$setterName($resultVal);
                 } else {
