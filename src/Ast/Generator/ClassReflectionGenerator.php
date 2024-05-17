@@ -68,6 +68,7 @@ class ClassReflectionGenerator extends AbstractClassVisitor
             }
 
             $ofMapName = $this->getAttributeFnVal($property, FieldNameOfAnnotationInterface::class, 'getOfFieldName') ?? null;
+            $isOfInner = $this->getAttributeFnVal($property, FieldNameOfAnnotationInterface::class, 'isOfInner') ?? false;
             $ofMapName === $fieldName && $ofMapName = null;
             $toArrayMapName = $this->getAttributeFnVal($property, FieldNameToArrayAnnotationInterface::class, 'getToArrayFieldName') ?? null;
             $toArrayMapName === $fieldName && $toArrayMapName = null;
@@ -82,6 +83,7 @@ class ClassReflectionGenerator extends AbstractClassVisitor
                 'toArrayMapName' => $toArrayMapName,
                 'arrayKey' => $arrayHints['arrayKeyType'],
                 'arrayValue' => $arrayHints['arrayValueType'],
+                'isOfInner' => $isOfInner,
             ];
         }
         $reflection['reflectionProperties'] = $reflectionPropertyCodeList;

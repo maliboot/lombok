@@ -55,6 +55,9 @@ class Template {
                 continue;
             }
             $fieldRef = $reflectionProperties[$fieldName];
+            if ($fieldRef['isOfInner']) {
+                continue;
+            }
             if (! $fieldRef['allowsNull'] && $fieldValue === null) {
                 continue;
             }

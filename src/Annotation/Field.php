@@ -15,16 +15,23 @@ class Field implements FieldAnnotationInterface
      * @param null|string $type 类属性类型
      * @param null|string $desc 类属性描述
      * @param null|string $example 使用示例
+     * @param bool $inner 是否内部属性，否则不再参与::of初始化
      */
     public function __construct(
         public ?string $name = null,
         public ?string $type = null,
         public ?string $desc = null,
         public ?string $example = null,
+        public bool $inner = false,
     ) {}
 
     public function getOfFieldName(): ?string
     {
         return $this->name;
+    }
+
+    public function isOfInner(): bool
+    {
+        return $this->inner;
     }
 }

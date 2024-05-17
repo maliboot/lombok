@@ -264,7 +264,7 @@ abstract class AbstractVisitor
         return false;
     }
 
-    protected function getAttributeFnVal(Reflector $reflector, string $interfaceFQN, string $fnName): ?string
+    protected function getAttributeFnVal(Reflector $reflector, string $interfaceFQN, string $fnName): mixed
     {
         return $this->getAttributeFnValues($reflector, $interfaceFQN, [$fnName])[$fnName];
     }
