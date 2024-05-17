@@ -19,9 +19,7 @@ class LombokVisitor extends NodeVisitorAbstract
 {
     public ?Class_ $class_ = null;
 
-    public function __construct(protected VisitorMetadata $visitorMetadata)
-    {
-    }
+    public function __construct(protected VisitorMetadata $visitorMetadata) {}
 
     public function beforeTraverse(array $nodes)
     {
@@ -90,15 +88,9 @@ class LombokVisitor extends NodeVisitorAbstract
         }
     }
 
-    private function visitInterface(Interface_ $interface_): void
-    {
-    }
+    private function visitInterface(Interface_ $interface_): void {}
 
-    private function visitClassMethod(ClassMethod $method_): void
-    {
-    }
+    private function visitClassMethod(ClassMethod $method_): void {}
 
-    private function visitClassProperty(Property $property_): void
-    {
-    }
+    private function visitClassProperty(Property $property_): void {}
 }

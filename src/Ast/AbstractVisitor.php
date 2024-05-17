@@ -172,8 +172,8 @@ abstract class AbstractVisitor
         if (! $addNull) {
             return $completeType;
         }
-
-        if ($completeType[0] !== '?' && ! str_contains($completeType, 'null')) {
+        
+        if ($completeType[0] !== '?' && ! str_contains($completeType, 'null') && $completeType != 'mixed') {
             $completeType = str_contains($completeType, '|') ? $completeType . '|null' : '?' . $completeType;
         }
         return $completeType;

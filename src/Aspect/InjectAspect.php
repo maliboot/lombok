@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace MaliBoot\Lombok\Aspect;
 
+use HttpMessage;
 use Hyperf\Di\Annotation\AnnotationCollector;
 use Hyperf\Di\Annotation\Aspect;
 use Hyperf\Di\Aop\AbstractAspect;
@@ -31,6 +32,7 @@ class InjectAspect extends AbstractAspect
         Lombok::class,
         Of::class,
         Delegate::class,
+        HttpMessage::class,
     ];
 
     public function process(ProceedingJoinPoint $proceedingJoinPoint)

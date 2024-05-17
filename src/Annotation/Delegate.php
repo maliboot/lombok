@@ -12,7 +12,7 @@ use MaliBoot\Lombok\Contract\DelegateAnnotationInterface;
 class Delegate extends AbstractAnnotation implements DelegateAnnotationInterface
 {
     /**
-     * @param string $className 委托类的名称；注意：1、允许委托接口类、抽象类，但其内不能有抽象方法；2、只会委托本类不存在的常量、属性、方法
+     * @param string $className 委托类的名称；注意：1、允许委托接口类、抽象类，但其内不能有抽象方法；2、只会委托本类不存在的常量、属性、方法 3、可选继承<a href='psi_element://\MaliBoot\Lombok\Contract\SetterDelegateInterface'>SetterDelegateInterface</a>｜<a href='psi_element://\MaliBoot\Lombok\Contract\GetterDelegateInterface'>GetterDelegateInterface</a>
      */
     public function __construct(private string $className)
     {
