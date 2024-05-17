@@ -59,7 +59,7 @@ class ClassReflectionGenerator extends AbstractClassVisitor
         foreach ($this->reflectionClass->getProperties() as $property) {
             $fieldName = $property->getName();
             $fieldAttrs = array_reduce($property->getAttributes(), function ($carry, $item) {
-                $carry['\\' . $item->getName()] = $item->getArguments();
+                $carry['\\' . $item->getName()] = array_map(fn ($item) => is_object($item) ? serialize($item) : $item, $item->getArguments());
                 return $carry;
             }, []);
             $arrayHints = $this->getAttributeFnValues($property, FieldArrayTypeAnnotationInterface::class, ['arrayKeyType', 'arrayValueType']);
